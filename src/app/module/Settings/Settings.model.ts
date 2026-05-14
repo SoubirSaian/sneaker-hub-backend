@@ -1,12 +1,25 @@
 import { model, models, Schema } from "mongoose";
-import { IFaq, IHelpAndSupport, ISettings } from "./Settings.interface";
+import { IFaq, IHelpAndSupport, IReport, ISettings } from "./Settings.interface";
 
 //help and support model
 const HelpAndSupportSchema = new Schema<IHelpAndSupport>({
-    phone: { type: String, required: true },
-    email: { type: String, required: true },
-    description: { type: String,required: true },
-    
+    buyerId: { type: Schema.Types.ObjectId, ref: "Buyer", required: true },
+    orderId: { type: Schema.Types.ObjectId, ref: "Order", required: true },
+    type: { type: String, required: true },
+    images: { type: [String], default: [] },
+    content: { type: String, required: true },
+    status: { type: String, default: "open" },
+    isUrgent: { type: Boolean, default: false },
+}, { timestamps: true });
+
+const ReportSchema = new Schema<IReport>({
+    buyerId: { type: Schema.Types.ObjectId, ref: "Buyer", required: true },
+    productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    type: { type: String, required: true },
+    images: { type: [String], default: [] },
+    content: { type: String, required: true },
+    contactMethod: { type: String, required: true },
+    isUrgent: { type: Boolean, default: false },
 }, { timestamps: true });
 
 //! Privacy and policy
@@ -55,6 +68,8 @@ const termsAndConditionsSchema = new Schema<ISettings>(
 
 const HelpAndSupportModel = models.HelpAndSupport || model<IHelpAndSupport>("HelpAndSupport", HelpAndSupportSchema);
 
+const ReportModel = models.Report || model<IReport>("Report", ReportSchema);
+
 const PrivacyPolicyModel = models.PrivacyPolicy || model('PrivacyPolicy', privacySchema);
 
 const TermsConditionsModel = models.TermsConditions || model(
@@ -64,11 +79,12 @@ const TermsConditionsModel = models.TermsConditions || model(
 
 const FaqModel = models.Faq || model('Faq',faqSchema);
 
-const SettingsModel = {
+export {
      HelpAndSupportModel,
+      ReportModel,
      PrivacyPolicyModel,
      TermsConditionsModel,
      FaqModel
 };
 
-export default SettingsModel;
+// export default SettingsModel;

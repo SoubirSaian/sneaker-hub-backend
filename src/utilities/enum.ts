@@ -6,10 +6,10 @@ export const ENUM_USER_Type = {
    
 }
 
-export const ENUM_DESTINATION_STATUS = {
-    PAST: "PAST",
-    UPCOMING: "UPCOMING",
-    BUCKET_lIST: "BUCKET_LIST",
+export const ENUM_ORDER_TYPE = {
+    BUY_NOW: "Buy Now",
+    HOLD: "Hold",
+    
 }
 
 export const ENUM_SUBSCRIPTION_TYPE = {
@@ -17,16 +17,20 @@ export const ENUM_SUBSCRIPTION_TYPE = {
     COUPLE: "Couple"
 }
 
-export const ENUM_COUPLE_STATUS = {
-    PENDING: "Pending",
+export const ENUM_ORDER_STATUS = {
+    HOLDING: "Holding",
+    PLACED: "Placed",
     ACCEPTED: "Accepted",
+    READY_FOR_PICKUP: "Ready for Pickup",
+    ON_THE_WAY: "On the Way",
     REJECTED: "Rejected",
-    BROKE_UP: "Broke_up"
+    COMPLETED: "Completed"
 }
 
-export const ENUM_ACTIVITY_STATUS = {
-    DONE: "Done",
-    IN_PROGRESS: "In Progress",
+export const ENUM_CART_STATUS = {
+    ACTIVE: "Active",
+    ORDERED: "Ordered",
+    REMOVED: "Removed"
 }
 
 export const ENUM_SPARK_STATUS = {

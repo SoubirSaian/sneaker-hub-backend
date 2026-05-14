@@ -6,6 +6,13 @@ export interface IFollow {
   createdAt: Date;
 }
 
+export interface IwishList {
+  buyerId: Types.ObjectId;      // ref Buyer.id
+  retailerId: Types.ObjectId;   // ref Retailer.id
+  productId: Types.ObjectId;   // ref Product.id
+  createdAt: Date;
+}
+
 export interface IReview {
   buyerId: Types.ObjectId;      // ref Buyer.id
   retailerId: Types.ObjectId;

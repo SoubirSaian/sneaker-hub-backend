@@ -1,5 +1,6 @@
 import ApiError from "../../../error/ApiError";
 import { IJwtPayload } from "../../../interface/jwt.interface";
+import { FollowModel, WishListModel } from "../Engagement/Engagement.model";
 import { IBuyer, IBuyerNotification } from "./Buyer.interface";
 import BuyerModel from "./Buyer.model";
 
@@ -56,9 +57,33 @@ const addBrandsOfInterest = async (userDetails: IJwtPayload, payload: string[]) 
     return buyer;
 }
 
+const getBuyersInterestsData = async (userDetails: IJwtPayload) => {
+    const { profileId } = userDetails;
+
+    let [brands, stores, favourites] = await Promise.all([
+        BuyerModel.findById(profileId).select("name shoeSize brands"),
+        FollowModel.find({ buyerId: profileId }).populate("retailerId", "name").lean(),
+        WishListModel.find({ buyerId: profileId }).populate("productId", "name").lean()
+    ]);
+
+    // BuyerModel.findById(profileId).select("name shoeSize brands").lean();
+
+    // const stores = await FollowModel.find({ buyerId: profileId }).populate("retailerId", "name").lean();
+
+    // const favourites = await WishListModel.find({ buyerId: profileId }).populate("productId", "name").lean();
+
+    return {
+        brands: brands?.brands || [],
+        stores: stores || [],
+        favourites: favourites || []
+    };
+}
 
 const BuyerServices = { 
-    setBuyerNotificationAlerts 
+    setBuyerNotificationAlerts,
+    addSelectedShoeSize,
+    addBrandsOfInterest,
+    getBuyersInterestsData
 };
 
 export default BuyerServices;

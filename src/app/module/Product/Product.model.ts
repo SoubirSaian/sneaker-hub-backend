@@ -7,7 +7,7 @@ const ProductSchema = new Schema<IProduct>({
     description: { type: String, default: "" },
     price: { type: Number, required: true },
     image: { type: String, default: '' },
-    specifications: { type: Object, default: {} },
+    variant: [{ type: Object, default: {} }],
     brand: { type: String, default: "" },
     color: { type: String, default: "" },
     styleCode: { type: String, default: "" },

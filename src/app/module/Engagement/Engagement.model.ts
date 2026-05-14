@@ -1,5 +1,5 @@
 import { model, Schema, models } from "mongoose";
-import {  IFollow, IReview } from "./Engagement.interface";
+import {  IFollow, IReview, IwishList } from "./Engagement.interface";
 
 //follow model schema
 const FollowSchema = new Schema<IFollow>({
@@ -93,12 +93,39 @@ const ReviewSchema = new Schema<IReview>({
   }
 });
 
+//wishlist model schema
+const WishListSchema = new Schema<IwishList>({
+    
+  buyerId: {
+    type: Schema.Types.ObjectId,
+    ref: "Buyer",
+    required: true,
+  },
+  retailerId: {
+    type: Schema.Types.ObjectId,
+    ref: "Retailer",
+    required: true,
+  },
+  productId: {
+    type: Schema.Types.ObjectId,
+    ref: "Product",
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  }
+});
+
 
 const FollowModel = models.Follow || model<IFollow>("Follow", FollowSchema);
 
 const ReviewModel = models.Review || model<IReview>("Review", ReviewSchema);
 
+const WishListModel = models.WishList || model<IwishList>("WishList", WishListSchema);
+
 export { 
     FollowModel,
-    ReviewModel
+    ReviewModel,
+    WishListModel
 };

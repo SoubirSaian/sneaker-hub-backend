@@ -1,13 +1,18 @@
 import { Types } from "mongoose";
 
 export interface IPairs {
-    user: Types.ObjectId;
+    resellerId: Types.ObjectId;
     name: string;
-    username?: string;
-    phone?: string;
-    email: string;
-    address?: string;
-    profile_image?: string;
-    totalAmount?: number;
-    totalPoint?: number;
+    images: string;
+    brand: string;
+    quantity: string;
+    details: string;
+    gender: string;
+    askingPrice: number;
+    size: number;
+    type: string;
+    isVisibleToStore: boolean;
+    isShowAskingPrice: boolean;
+    isAllowDirectRequest: boolean;
+    createdAt: Date;
 }

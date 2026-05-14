@@ -1,11 +1,11 @@
 import ApiError from "../../../error/ApiError";
 import { IFaq, IHelpAndSupport, ISettings } from "./Settings.interface";
-import SettingsModel from "./Settings.model";
+import { FaqModel, HelpAndSupportModel, PrivacyPolicyModel, TermsConditionsModel } from "./Settings.model";
 
 //help and support service
 const submitHelpAndSupportService = async (payload: IHelpAndSupport) => {
 
-    const result = await SettingsModel.HelpAndSupportModel.create({...payload});
+    const result = await HelpAndSupportModel.create({...payload});
 
     if (!result) {
         throw new ApiError(500, "Failed to submit help and support request");
@@ -16,14 +16,14 @@ const submitHelpAndSupportService = async (payload: IHelpAndSupport) => {
 
 const getHelpAndSupportService = async () => {
 
-    const result = await SettingsModel.HelpAndSupportModel.find({}).lean();
+    const result = await HelpAndSupportModel.find({}).lean();
 
     return result;
 };
 
 const deleteHelpAndSupportService = async (id: string) => {
 
-    const result = await SettingsModel.HelpAndSupportModel.findByIdAndDelete(id);
+    const result = await HelpAndSupportModel.findByIdAndDelete(id);
 
     if (!result) {
         throw new ApiError(500, "Failed to delete this report.");
@@ -37,14 +37,14 @@ const deleteHelpAndSupportService = async (id: string) => {
 
 const getPrivacyPolicy = async () => {
 
-  return await SettingsModel.PrivacyPolicyModel.findOne({});
+  return await PrivacyPolicyModel.findOne({});
 
 };
 
 const editPrivacyPolicy = async (id: string, payload: ISettings) => {
 
   
-  const result = await SettingsModel.PrivacyPolicyModel.findByIdAndUpdate(id , {...payload}, {
+  const result = await PrivacyPolicyModel.findByIdAndUpdate(id , {...payload}, {
     new: true,
     runValidators: true,
   });
@@ -60,14 +60,14 @@ const editPrivacyPolicy = async (id: string, payload: ISettings) => {
 
 const getTermsConditions = async () => {
 
-    return await SettingsModel.TermsConditionsModel.findOne({});
+    return await TermsConditionsModel.findOne({});
 
 };
 
 const editTermsConditions = async (id: string,payload: ISettings) => {
 
     
-    const result = await SettingsModel.TermsConditionsModel.findByIdAndUpdate( id , payload, {
+    const result = await TermsConditionsModel.findByIdAndUpdate( id , payload, {
         new: true,
         runValidators: true,
     });
@@ -83,7 +83,7 @@ const editTermsConditions = async (id: string,payload: ISettings) => {
 
 const createFaqService = async (payload: IFaq) => {
 
-    const result = await SettingsModel.FaqModel.create(payload);
+    const result = await FaqModel.create(payload);
 
     if(!result){
         throw new ApiError(500,"Failed to create FAQ.");
@@ -94,14 +94,14 @@ const createFaqService = async (payload: IFaq) => {
 
 const getFaqService = async () => {
 
-    const allFaq = await SettingsModel.FaqModel.find({}).lean();
+    const allFaq = await FaqModel.find({}).lean();
 
     return allFaq;
 }
 
 const editFaqService = async (id: string, payload: Partial<IFaq>) => {
 
-    const result = await SettingsModel.FaqModel.findByIdAndUpdate(id, payload, {
+    const result = await FaqModel.findByIdAndUpdate(id, payload, {
         new: true,
         runValidators: true,
     });
@@ -115,7 +115,7 @@ const editFaqService = async (id: string, payload: Partial<IFaq>) => {
 
 const deleteFaqService = async (id: string) => {
 
-    const result = await SettingsModel.FaqModel.findByIdAndDelete(id);
+    const result = await FaqModel.findByIdAndDelete(id);
 
     if(!result){
         throw new ApiError(500,"Failed to delete FAQ.");

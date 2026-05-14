@@ -9,7 +9,10 @@ export interface IProduct {
     brand: string;
     color: string;
     styleCode: string;
-    specifications: {};
+    variant: {
+        size: number,
+        stock: number
+    }[];
     availability: string;
     createdAt: Date;
 }

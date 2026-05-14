@@ -11,8 +11,23 @@ export interface IFaq{
 }
 
 export interface IHelpAndSupport {
-    phone: string;
-    email: string;
-    description: string;
-    status?: string;
+    buyerId: Types.ObjectId;
+    orderId: Types.ObjectId;
+    type: string;
+    images: string[];
+    content: string;
+    status: string;
+    isUrgent: boolean;
+    createdAt: Date;
+}
+
+export interface IReport {
+    buyerId: Types.ObjectId;
+    productId: Types.ObjectId;
+    type: string;
+    images: string[];
+    content: string;
+    contactMethod: string;
+    isUrgent: boolean;
+    createdAt: Date;
 }

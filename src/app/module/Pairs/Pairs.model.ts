@@ -2,14 +2,19 @@ import { model, Schema, models } from "mongoose";
 import { IPairs } from "./Pairs.interface";
 
 const PairsSchema = new Schema<IPairs>({
-    user: { type: Schema.Types.ObjectId, required: true, ref: "User" },
+    resellerId: { type: Schema.Types.ObjectId, ref: "Reseller", required: true },
     name: { type: String, required: true },
-    phone: { type: String },
-    email: { type: String, required: true, unique: true },
-    address: { type: String },
-    profile_image: { type: String, default: "" },
-    totalAmount: { type: Number, default: 0 },
-    totalPoint: { type: Number, default: 0 }
+    images: { type: String, required: true },
+    brand: { type: String, required: true },
+    quantity: { type: String, required: true },
+    details: { type: String, required: true },
+    gender: { type: String, required: true },
+    askingPrice: { type: Number, required: true },
+    size: { type: Number, required: true },
+    type: { type: String, required: true },
+    isVisibleToStore: { type: Boolean, default: true },
+    isShowAskingPrice: { type: Boolean, default: true },
+    isAllowDirectRequest: { type: Boolean, default: false },
 }, { timestamps: true });
 
 const PairsModel = models.Pairs || model<IPairs>("Pairs", PairsSchema);

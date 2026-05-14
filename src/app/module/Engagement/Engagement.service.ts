@@ -3,7 +3,7 @@ import ApiError from "../../../error/ApiError";
 import { IJwtPayload } from "../../../interface/jwt.interface";
 import RetailerModel from "../Retailer/Retailer.model";
 import { IReview } from "./Engagement.interface";
-import { FollowModel, ReviewModel } from "./Engagement.model";
+import { FollowModel, ReviewModel, WishListModel } from "./Engagement.model";
 
 //follow
 
@@ -130,6 +130,37 @@ const addReviewService = async (userDetails: IJwtPayload, payload: IReview) => {
         },
     ]);
 
+    return null;
+
+}
+
+
+// wishlist service to add a product to wishlist of a buyer
+
+const addToWishlistService = async (userDetails: IJwtPayload, payload: { retailerId: string, productId: string }) => {
+
+    const { profileId } = userDetails;
+
+    const { retailerId, productId } = payload;
+
+    // Check if the product is already in the wishlist
+    const existingWishlistItem = await WishListModel.findOne({ buyerId: profileId, retailerId, productId });
+
+    if (existingWishlistItem) {
+        throw new ApiError(400, "This product is already in your wishlist.");
+    }
+
+    // Create a new wishlist item
+    const newWishlistItem =  WishListModel.create({
+        buyerId: profileId,
+        retailerId,
+        productId,
+    });
+
+    if(!newWishlistItem){
+        throw new ApiError(500, "Failed to add product to wishlist.");
+    }
+    
     return null;
 
 }

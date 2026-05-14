@@ -1,7 +1,8 @@
-## this is a health service provider app
+## this is a ecommerce app
 
-### it's a backend server based on node and express and typescript. 
-### It's a dating management app.
-- Couples can registration and log in this app. 
-- Then they can manage their date, travel, important dates in lige.
-- Also they can share photos, events, videos and can plan their upcoming events jointly. 
+### it's a backend server based on node, express, typescript and mongoDB database. 
+### this app is focused on to sell sneaker around usa.
+- there are 3 user types. Buyer, Retailer and Reseller. 
+- Retailer can display their collection and buyer will see them .
+- buyer can buy, make wishlist, make favourite of their choice.
+- Retailer can source their product from reseller. 
