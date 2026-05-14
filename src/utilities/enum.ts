@@ -1,8 +1,20 @@
 
+export const ENUM_USER_Type = {
+    BUYER: "Buyer",
+    RETAILER: "Retailer",
+    RESELLER: "Reseller",
+   
+}
+
 export const ENUM_DESTINATION_STATUS = {
     PAST: "PAST",
     UPCOMING: "UPCOMING",
     BUCKET_lIST: "BUCKET_LIST",
+}
+
+export const ENUM_SUBSCRIPTION_TYPE = {
+    SOLO: "Solo",
+    COUPLE: "Couple"
 }
 
 export const ENUM_COUPLE_STATUS = {
@@ -40,6 +52,14 @@ export const ENUM_NOTIFICATION_TYPE = {
     PAYMENT_COMPLETED : "PAYMENT_COMPLETED",
     PAYMENT_FAILED : "PAYMENT_FAILED",
     // SYSTEM_ALERT : "SYSTEM_ALERT"
+}
+
+export const ENUM_CONNECTION_ENDING_REASON = {
+    ACTIVE : "Active",
+    GRATUATED : "Gratuated",
+    TIMEOUT : "Timeout",
+    USER_CANCELED : "User_Canceled",
+    AUTO_ENDED_FROM_OTHER_GRADUATION : "Auto_Ended_From_Other_Graduation",
 }
 
 

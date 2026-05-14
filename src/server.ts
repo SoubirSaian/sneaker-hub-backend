@@ -2,12 +2,16 @@
 /* eslint-disable no-undef */
 import mongoose from 'mongoose';
 import http, { Server as HTTPServer } from 'http'; // ✅ import http
+import dns from "node:dns";
 import app from './app';
 import { errorLogger, logger } from './shared/logger';
 import config from './config';
 import mongoDBConnection from './config/mongoDB';
 // import runCronJobEverydatAtNight from './helper/cronHelper';
 import { initSocket } from './socket/socket.connection';
+
+//to connect database perfectly
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
 let myServer: HTTPServer | undefined;
 

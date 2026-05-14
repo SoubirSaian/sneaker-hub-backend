@@ -2,22 +2,27 @@ import { Types } from "mongoose";
 
 export interface IAuth {
     profile: Types.ObjectId;
+    refModel: string;
     email: string;
     name?: string;
+    phone?: string;
     password: string;
+    role: string
     verificationCode: string;
     isEmailVerified: boolean;
+    isProfileCompleted: boolean;
     isBlocked: boolean;
 }
 
 export type TRegisterUser = {
     name : string;
     email: string;
-    city: string;
-    firstMeet: Date;
-    isLongDistance: boolean;
     password: string;
     confirmPassword: string;
+    userType: string;
+    shoeSize?: {};
+    latitude?: number;
+    longitude?: number;
 }
 
 export interface TLoginUser {

@@ -2,8 +2,9 @@ import { Types } from "mongoose";
 
 export interface IUser {
   auth: Types.ObjectId;
-  couple?: Types.ObjectId;
-  partner?: Types.ObjectId;
+  couple: Types.ObjectId;
+  partner: Types.ObjectId;
+  status: string;
   email: string;
   name: string;
   city: string;

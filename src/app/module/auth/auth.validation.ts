@@ -6,21 +6,14 @@ const registerUserValidationSchema = z.object({
     name: z
       .string()
       .min(1, "Full name is required"),
-      
-    city: z
-      .string()
-      .min(1, "City name is required"),
-
-    firstMeet: z.coerce
-        .date({
-            message: "First meet date is required"
-        }).max(new Date(), "Date  cannot be in the future"),
-        
-    isLongDistance: z.coerce.boolean(),
 
     email: z
       .string()
       .email("Invalid email format"),
+
+    userType: z
+      .string()
+      .min(1, "User type is required"),
 
     password: z
       .string()
@@ -29,6 +22,24 @@ const registerUserValidationSchema = z.object({
     confirmPassword: z
       .string()
       .min(6, "Password must be at least 6 characters"),
+
+    shoeSize: z
+      .object({})
+      .optional(),
+
+    latitude: z
+      .number()
+      .refine((value) => value >= -90 && value <= 90, {
+        message: "Latitude must be between -90 and 90",
+      }),
+      // .optional(),
+
+    longitude: z
+      .number()
+      .refine((value) => value >= -180 && value <= 180, {
+        message: "Longitude must be between -180 and 180",
+      })
+      // .optional(),
   })
   // validate that password === confirmPassword
   .refine(

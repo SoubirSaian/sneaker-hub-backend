@@ -1,0 +1,104 @@
+import { model, Schema, models } from "mongoose";
+import {  IFollow, IReview } from "./Engagement.interface";
+
+//follow model schema
+const FollowSchema = new Schema<IFollow>({
+    
+  buyerId: {
+    type: Schema.Types.ObjectId,
+    ref: "Buyer",
+    required: true,
+  },
+  retailerId: {
+    type: Schema.Types.ObjectId,
+    ref: "Retailer",
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  }
+});
+
+FollowSchema.index({ buyerId: 1, retailerId: 1 },{ unique: true });
+
+
+//review model schema
+const ReviewSchema = new Schema<IReview>({
+    
+  buyerId: {
+    type: Schema.Types.ObjectId,
+    ref: "Buyer",
+    required: true,
+  },
+  retailerId: {
+    type: Schema.Types.ObjectId,
+    ref: "Retailer",
+    required: true,
+  },
+  productId: {
+    type: Schema.Types.ObjectId,
+    ref: "Product",
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+  overallrating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    required: true,
+  },
+  customerServiceRating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    required: true,
+  },
+  authenticityRating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    required: true,
+  },
+  pickupSpeedRating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    required: true,
+  },
+  priceRating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    required: true,
+  },
+  storeExperienceRating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    required: true,
+  },
+  staffHelpfulnessRating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  }
+});
+
+
+const FollowModel = models.Follow || model<IFollow>("Follow", FollowSchema);
+
+const ReviewModel = models.Review || model<IReview>("Review", ReviewSchema);
+
+export { 
+    FollowModel,
+    ReviewModel
+};

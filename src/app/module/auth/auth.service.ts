@@ -6,11 +6,16 @@ import { sendVerificationEmail } from "../../../helper/emailHelper";
 import { createToken } from "../../../helper/jwtHelper";
 import generateVerifyCode from "../../../utilities/codeGenerator";
 import { IUser } from "../User/User.interface";
-import UserModel from "../User/User.model";
+// import UserModel from "../User/User.model";
 import { JwtPayload, Secret,SignOptions } from "jsonwebtoken";
 import { IAuth, IResetPassword, TLoginUser, TRegisterUser } from "./auth.interface";
 import { IJwtPayload } from "../../../interface/jwt.interface";
 import AuthModel from "./auth.model";
+import { ENUM_USER_Type } from "../../../utilities/enum";
+import ResellerModel from "../Reseller/Reseller.model";
+import RetailerModel from "../Retailer/Retailer.model";
+import BuyerModel from "../Buyer/Buyer.model";
+import { ref } from "process";
 
 
 
@@ -20,7 +25,23 @@ const registerUserService = async (payload: TRegisterUser) => {
 
     try {
 
-        const { email, password,name, city, firstMeet, isLongDistance } = payload;
+        const { email, password,name, userType, shoeSize, latitude, longitude } = payload;
+
+        let UserModel: any;
+        //selected user type and create profile accordingly
+        switch (userType) {
+            case ENUM_USER_Type.BUYER:
+                UserModel = BuyerModel;
+                break;
+            case ENUM_USER_Type.RESELLER:
+                UserModel = ResellerModel;
+                break;
+            case ENUM_USER_Type.RETAILER:
+                UserModel = RetailerModel;
+                break;
+            default:
+                throw new ApiError(400, "Invalid user type");
+        }
 
         const emailExist = await AuthModel.exists({
             email: email.toLowerCase()
@@ -34,8 +55,10 @@ const registerUserService = async (payload: TRegisterUser) => {
         const { code, expiredAt } = generateVerifyCode(10);
 
         const userDataPayload: any = {
+            refModel: UserModel,
             email: email.toLowerCase(),
             password,
+            role: userType,
             verificationCode: code,
         };
 
@@ -44,6 +67,8 @@ const registerUserService = async (payload: TRegisterUser) => {
 
         const createdUser = user[0];
 
+        
+
         // Create Profile
         const profile = await UserModel.create(
             [
@@ -51,9 +76,10 @@ const registerUserService = async (payload: TRegisterUser) => {
                     auth: createdUser._id,
                     email: email.toLowerCase(),
                     name,
-                    city,
-                    firstMeet,
-                    isLongDistance
+                    shoeSize,
+                    location: {
+                        coordinates: [Number(longitude), Number(latitude)]
+                    }
                 },
             ],
             { session }

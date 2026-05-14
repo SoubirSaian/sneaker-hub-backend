@@ -1,5 +1,6 @@
 import { model, models, Schema } from "mongoose";
 import { IUser } from "./User.interface";
+import { ENUM_USER_STATUS } from "../../../utilities/enum";
 
 
 
@@ -7,6 +8,11 @@ const UserSchema = new Schema<IUser>({
     auth: { type: Schema.Types.ObjectId, ref: "Auth" },
     couple: { type: Schema.Types.ObjectId, ref: "Couple", default: null },
     partner: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    status: {
+        type: String,
+        enum: Object.values(ENUM_USER_STATUS),
+        default: ENUM_USER_STATUS.VIBE_CHECK
+    },
     name: {
         type: String,
         default: '',
