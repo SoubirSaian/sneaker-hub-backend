@@ -21,3 +21,25 @@ export interface IPayment {
     paymentId?: string;
     createdAt: Date
 }
+
+// export interface IPayment {
+//     orderId: Types.ObjectId;
+
+//     buyerId: Types.ObjectId;
+
+//     amount: number;
+
+//     gateway:
+//         | "STRIPE"
+//         | "SSL_COMMERZ"
+//         | "BKASH";
+
+//     transactionId: string;
+
+//     status:
+//         | "PENDING"
+//         | "SUCCESS"
+//         | "FAILED";
+
+//     gatewayResponse?: any;
+// }

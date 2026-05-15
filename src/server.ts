@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable no-undef */
 import mongoose from 'mongoose';
 import http, { Server as HTTPServer } from 'http'; // ✅ import http
 import dns from "node:dns";
@@ -35,7 +33,7 @@ async function main() {
 
     // ✅ Start server
     myServer = server.listen(port, () => {
-      console.log(`Loukarver server hitting : http://localhost:${port}`);
+      console.log(`Sneaker hub server hitting : http://localhost:${port}`);
     });
 
     // ==============================

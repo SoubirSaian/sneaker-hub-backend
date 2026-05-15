@@ -22,6 +22,41 @@ const PaymentSchema = new Schema<IPayment>({
     createdAt: { type: Date, default: Date.now }
 });
 
+// const PaymentSchema = new Schema<IPayment>({
+//     orderId: {
+//         type: Schema.Types.ObjectId,
+//         ref: "Order",
+//         required: true,
+//     },
+
+//     buyerId: {
+//         type: Schema.Types.ObjectId,
+//         ref: "Buyer",
+//         required: true,
+//     },
+
+//     amount: Number,
+
+//     gateway: {
+//         type: String,
+//         enum: ["STRIPE", "SSL_COMMERZ", "BKASH"],
+//     },
+
+//     transactionId: {
+//         type: String,
+//         unique: true,
+//     },
+
+//     status: {
+//         type: String,
+//         enum: ["PENDING", "SUCCESS", "FAILED"],
+//         default: "PENDING",
+//     },
+
+//     gatewayResponse: Schema.Types.Mixed,
+
+// }, { timestamps: true });
+
 export const SubscriptionPlanModel = models.SubscriptionPlan || model<ISubscriptionPlan>("SubscriptionPlan", SubscriptionSchema);
 
 export const PaymentModel = models.Payment || model<IPayment>("Payment", PaymentSchema);

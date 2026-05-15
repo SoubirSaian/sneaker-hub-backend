@@ -1,3 +1,4 @@
+import { CANCELLED } from "dns"
 
 export const ENUM_USER_Type = {
     BUYER: "Buyer",
@@ -24,7 +25,27 @@ export const ENUM_ORDER_STATUS = {
     READY_FOR_PICKUP: "Ready for Pickup",
     ON_THE_WAY: "On the Way",
     REJECTED: "Rejected",
-    COMPLETED: "Completed"
+    COMPLETED: "Completed",
+    CANCELLED: "Cancelled",
+    PROCESSING: "Processing",
+}
+
+export const ENUM_ORDER_ITEM_STATUS = {
+    HOLDING: "Holding",
+    PLACED: "Placed",
+    SHIPPED: "Shipped",
+     DELIVERED: "Delivered",
+    REJECTED: "Rejected",
+    COMPLETED: "Completed",
+    CANCELLED: "Cancelled",
+    PROCESSING: "Processing",
+}
+
+export const ENUM_SELLER_SPLIT_ORDER_STATUS = {
+    PLACED: "Placed",
+    PROCESSING: "Processing",
+    SHIPPED: "Shipped",
+    DELIVERED: "Delivered",
 }
 
 export const ENUM_CART_STATUS = {
@@ -33,15 +54,17 @@ export const ENUM_CART_STATUS = {
     REMOVED: "Removed"
 }
 
-export const ENUM_SPARK_STATUS = {
-    ROMANTIC: "Romantic",
-    DESIRE: "Desire",
+export const ENUM_PAYMENT_STATUS = {
+   PENDING: "Pending",
+   PAID: "Paid",
+   FAILED: "Failed",
+   REFUNDED: "Refunded",
 }
 
-export const ENUM_DATE_STATUS = {
-    PROPOSED: "Proposed",
-    ACCEPTED: "Accepted",
-    COMPLETED: "Completed",
+export const ENUM_PAYMENT_METHOD = {
+    STRIPE: "Stripe",
+    PAYPAL: "PayPal",
+    CREDIT_CARD: "Credit Card",
 }
 
 export const ENUM_NOTIFICATION_TYPE = {

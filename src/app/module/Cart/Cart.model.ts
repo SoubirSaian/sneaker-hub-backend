@@ -13,6 +13,12 @@ const CartSchema = new Schema<ICart>({
    status: { type: String, enum: Object.values(ENUM_CART_STATUS), default: ENUM_CART_STATUS.ACTIVE },
 }, { timestamps: true });
 
+CartSchema.index({
+    buyerId: 1,
+    productId: 1,
+    selectedSize: 1,
+}, { unique: true });
+
 const CartModel = models.Cart || model<ICart>("Cart", CartSchema);
 
 export default CartModel;
