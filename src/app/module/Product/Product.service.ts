@@ -1,11 +1,177 @@
 import ApiError from "../../../error/ApiError";
+import { IJwtPayload } from "../../../interface/jwt.interface";
 import { IProduct } from "./Product.interface";
-import ProductModel from "./Product.model";
+import {ProductModel, RecentSearchModel} from "./Product.model";
 
-const u = async () => {
 
+const addProductService = async (
+  userDetails: IJwtPayload,
+  files: Express.Multer.File[],
+   productData: Partial<IProduct>
+  ) => {
+    const {profileId} = userDetails;
+
+    if (!files || files.length === 0) {
+        throw new ApiError(400, "At least one product image is required.");
+    }
+
+    const imageUrls = files.map(file => {
+        // Assuming you have a function to upload the file and get its URL
+        return `uploads/product-image/${file.filename}`; // Replace with actual URL generation logic
+    });
+
+    // productData.images = imageUrls;
+    
+    const newProduct = await ProductModel.create({
+      retailerId: profileId,
+      images: imageUrls,
+        ...productData,
+    }); 
+
+    if(!newProduct){
+        throw new ApiError(500,"Failed to add product.");
+    }
+
+    return newProduct;
+}
+
+// product-search.service.ts
+
+const searchProductsService = async (userDetails: IJwtPayload, query: Record<string,unknown>) => {
+    const {profileId} = userDetails;
+    const {searchtext} = query;
+
+    /*
+     |--------------------------------------------------------------------------
+     | 2. SEARCH PRODUCTS
+     |--------------------------------------------------------------------------
+     */
+
+    const products = await ProductModel.find({
+      $or: [
+        {
+          name: {
+            $regex: searchtext,
+            $options: "i",
+          },
+        },
+        {
+          brand: {
+            $regex: searchtext,
+            $options: "i",
+          },
+        },
+      ],
+    })
+      .select("_id name brand price image totalSearchCount")
+      .limit(10)
+      .lean();
+
+      const recent = await RecentSearchModel.findOneAndUpdate(
+      {
+        buyerId: profileId,
+        keyword: searchtext,
+      },
+      {
+        searchedAt: new Date(),
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
+
+    if(!recent){
+        const newRecentSearch = await RecentSearchModel.create(
+            {
+                buyerId: profileId,
+                keyword: searchtext,
+                searchedAt: new Date(),
+            }
+        );
+
+        if(!newRecentSearch){
+            throw new ApiError(500,"Failed to save recent search");
+        }
+    }
+
+
+    return products;
+ 
 };
 
-const ProductServices = { u };
+const getTrendingNowAndRecentSearchesSevice = async (userDetails: IJwtPayload) => {
+    const {profileId} = userDetails;
+
+
+    const recentSearches = await RecentSearchModel.find({
+      buyerId: profileId,
+    })
+      .sort({ searchedAt: -1 })
+      .limit(10)
+      .select("keyword")
+      .lean();
+
+    /*
+     |--------------------------------------------------------------------------
+     | 5. GET TRENDING PRODUCTS
+     |--------------------------------------------------------------------------
+     */
+
+    const trendingProducts = await ProductModel.find()
+      .sort({ totalSearchCount: -1 })
+      .limit(10)
+      .select("_id name brand price image totalSearchCount")
+      .lean();
+
+    /*
+     |--------------------------------------------------------------------------
+     | 6. RETURN RESPONSE
+     |--------------------------------------------------------------------------
+     */
+
+    return {
+      recentSearches,
+      trendingProducts,
+    };
+ 
+};
+
+
+
+const getProductDetailsByIdService = async (productId: string) => {
+
+    const product = await ProductModel.findById(productId);
+
+    if(!product){
+        throw new ApiError(500,"Failed to get details of the product");
+    }
+
+    product.totalSearchCount += 1;
+
+    await product.save();
+
+    return product;
+}
+
+const deleteRecentSearchService = async (userDetails: IJwtPayload, recentSearchId: string) => {
+
+    const {profileId} = userDetails;
+
+    const deleted = await RecentSearchModel.findOneAndDelete({
+        _id: recentSearchId,
+        buyerId: profileId,
+    });
+
+    if(!deleted){
+        throw new ApiError(500,"Failed to delete recent search");
+    }
+
+    return null;
+}
+
+const ProductServices = { 
+
+ };
 
 export default ProductServices;

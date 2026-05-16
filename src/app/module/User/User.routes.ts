@@ -23,19 +23,6 @@ userRouter.get("/get-profile-detail",
     UserController.getMyProfile
 );
 
-userRouter.post("/add-important-date",
-    // auth(["Supplier","Customer"]),
-    authorizeUser,
-    validateRequest(UserValidations.addImportantDaysValidation),
-    UserController.addImportantDate
-);
-
-userRouter.post("/add-next-meet",
-    // auth(["Supplier","Customer"]),
-    authorizeUser,
-    validateRequest(UserValidations.addNextMeetValidation),
-    UserController.addNextMeet
-);
 
 userRouter.patch("/change-password",
     authorizeUser,

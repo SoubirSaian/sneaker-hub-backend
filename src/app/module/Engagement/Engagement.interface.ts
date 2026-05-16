@@ -9,7 +9,8 @@ export interface IFollow {
 export interface IwishList {
   buyerId: Types.ObjectId;      // ref Buyer.id
   retailerId: Types.ObjectId;   // ref Retailer.id
-  productId: Types.ObjectId;   // ref Product.id
+  productId: Types.ObjectId;
+  isWanted: boolean;   // ref Product.id
   createdAt: Date;
 }
 

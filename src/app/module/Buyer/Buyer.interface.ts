@@ -7,6 +7,7 @@ export interface IBuyer {
   email: string;
   image: string;
   phone: string;
+  bio: string;
   membershipStatus: string;
   shoeSize: number;
   selectedShoeSize: {
@@ -27,12 +28,14 @@ export interface IBuyer {
     isWantedPairAlert: boolean;
     isGoSneakerAnnouncement: boolean;
   };
-  profileVisiblity: string[];
-  wishList: string[];
-  purchaseHistory: string[];
-  lockerCollection: string[];
-  vipStatus: string[];
-  activity: string[];
+  privacy: {
+    isProfileVisiblityPublic: boolean;
+    isWishListPublic: boolean;
+    isPurchaseHistoryPublic: boolean;
+    isLockerCollectionPublic: boolean;
+    isVipStatusPublic: boolean;
+    isActivityPublic: boolean;
+  }
   myReviews: number;
   subscription: Types.ObjectId;
   subscriptionStartDate: Date;

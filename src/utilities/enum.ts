@@ -34,6 +34,9 @@ export const ENUM_ORDER_ITEM_STATUS = {
     HOLDING: "Holding",
     PLACED: "Placed",
     SHIPPED: "Shipped",
+    ACCEPTED: "Accepted",
+    READY_FOR_PICKUP: "Ready for Pickup",
+    ON_THE_WAY: "On the Way",
      DELIVERED: "Delivered",
     REJECTED: "Rejected",
     COMPLETED: "Completed",
@@ -81,12 +84,14 @@ export const ENUM_NOTIFICATION_TYPE = {
     // SYSTEM_ALERT : "SYSTEM_ALERT"
 }
 
-export const ENUM_CONNECTION_ENDING_REASON = {
+export const ENUM_PRODUCT_AVAILABILITY = {
     ACTIVE : "Active",
-    GRATUATED : "Gratuated",
-    TIMEOUT : "Timeout",
-    USER_CANCELED : "User_Canceled",
-    AUTO_ENDED_FROM_OTHER_GRADUATION : "Auto_Ended_From_Other_Graduation",
+    ON_HOLD : "On Hold",
+    SOLD_OUT : "Sold Out",
+    COMING_SOON : "Coming Soon",
+    IN_STOCK : "In Stock",
+     LOW_STOCK: "Low Stock",
+
 }
 
 

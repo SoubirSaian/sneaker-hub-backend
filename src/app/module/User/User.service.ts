@@ -64,57 +64,6 @@ const getMyProfile = async (userDetails: JwtPayload) => {
     
 }
 
-const addImportantDayService = async (userDetails: JwtPayload,payload: TaddDate) => {
-
-    const {profileId} = userDetails;
-    
-    const user = await UserModel.findById(profileId);
-
-    if (!user) {
-        throw new Error("User not found to add important days.");
-    }
-
-    user.importantDays.push(payload);
-
-    await user.save();
-
-    return user.importantDays;
-
-    // const userId = "USER_ID";
-
-    // const newImportantDay = {
-    // label: "Anniversary",
-    // image: "anniversary.png",
-    // date: new Date("2026-06-15")
-    // };
-
-    // const updatedUser = await UserModel.findByIdAndUpdate(
-    // userId,
-    // {
-    //     $push: { importantDays: newImportantDay }
-    // },
-    // { new: true }
-    // );
-}
-
-
-const addNextMeetService = async (userDetails: JwtPayload,payload: {date: Date}) => {
-    // Service logic goes here
-    const {profileId} = userDetails;
-
-    const user = await UserModel.findById(profileId);
-
-    if (!user) {
-        throw new Error("User not found to add next meet date.");
-    }
-
-    user.nextMeet = payload.date;
-
-    await user.save();
-
-    return user.nextMeet;
-  
-}
 
 const changePasswordService = async (userDetails: IJwtPayload, payload: IChangePassword) => {
     // Service logic goes here
@@ -123,7 +72,7 @@ const changePasswordService = async (userDetails: IJwtPayload, payload: IChangeP
 
     const user =  await UserModel.findById(authId).select('+password');
     if(!user){
-        throw new ApiError(404,'User not found');
+        throw new ApiError(404,'User not found to change password.');
     }
 
     // const isPasswordMatched = await user.isPasswordMatched(oldPassword);
@@ -140,21 +89,6 @@ const changePasswordService = async (userDetails: IJwtPayload, payload: IChangeP
     return null;
 }
 
-//add desire mood
-const addDesireMood = async (userDetails:IJwtPayload,payload:{imoji: string,mood: string}) => {
-
-    const {profileId} = userDetails;
-
-    const profile = await UserModel.findByIdAndUpdate(profileId,{
-        desireMood: payload
-    });
-
-    if(!profile?.desireMood?.mood){
-        throw new ApiError(500,"Failed to add desire mood.");
-    }
-
-    return profile.desireMood;
-}
 
 
 //dashboard
@@ -228,10 +162,7 @@ const blockUserService = async (id: string) => {
 const UserServices = {
     updateUserProfile, 
     getMyProfile,
-    addImportantDayService,
-    addNextMeetService,
     changePasswordService ,
-    addDesireMood,
     getAllUserService,
     blockUserService
 };

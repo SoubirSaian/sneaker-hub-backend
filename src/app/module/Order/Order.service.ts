@@ -5,7 +5,7 @@ import { IOrder, TOrderPayload } from "./Order.interface";
 import {OrderItemModel, OrderModel, SellerSplitOrderModel} from "./Order.model";
 import { ENUM_ORDER_STATUS, ENUM_ORDER_TYPE } from "../../../utilities/enum";
 import mongoose from "mongoose";
-import ProductModel from "../Product/Product.model";
+import {ProductModel} from "../Product/Product.model";
 import { PaymentModel } from "../Payment/Payment.model";
 import { completeOrderAfterPayment } from "../Payment/PaymentSuccess.service";
 
@@ -287,6 +287,7 @@ const buyNowService = async (
         session.endSession();
     }
 };
+
 
 const OrderServices = { 
     placeNewOrderService,

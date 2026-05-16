@@ -165,11 +165,45 @@ const addToWishlistService = async (userDetails: IJwtPayload, payload: { retaile
 
 }
 
+const addToWantedlistService = async (wishListId: string) => {
+
+    const wishListItem = await WishListModel.findById(wishListId);
+
+    if(!wishListItem){
+        throw new ApiError(404, "Wishlist item not found to make wanted.");
+    }
+
+    wishListItem.isWanted = true;
+
+    await wishListItem.save();
+
+    
+    
+    return null;
+
+}
+
+const removeFromWishlistService = async (wishListId: string) => {
+
+    const wishListItem = await WishListModel.findById(wishListId);
+
+    if(!wishListItem){
+        throw new ApiError(404, "Wishlist item not found to remove from wishlist.");
+    }
+
+    await WishListModel.findByIdAndDelete(wishListId);
+
+    return null;
+
+}
+
 const EngagementServices = { 
     followRetailerService, 
     unfollowRetailerService ,
 
-    addReviewService
+    addReviewService,
+    addToWantedlistService,
+    removeFromWishlistService
 
 };
 

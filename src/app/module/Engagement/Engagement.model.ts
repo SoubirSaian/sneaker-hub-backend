@@ -111,6 +111,10 @@ const WishListSchema = new Schema<IwishList>({
     ref: "Product",
     required: true,
   },
+  isWanted: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
