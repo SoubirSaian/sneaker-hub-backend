@@ -94,5 +94,34 @@ export const ENUM_PRODUCT_AVAILABILITY = {
 
 }
 
+export const ENUM_PROMOTION_TYPE = {
+    fLASH_SALE : "Flash Sale",
+    NEW_ARRIVALS : "New Arrivals",
+    RESTOCK_ALERT : "Restock Alert",
+    EXCLUSIVE_DROP : "Exclusive Drop",
+    GENERAL_ANNOUNCEMENT : "General Announcement",
+
+}
+export const ENUM_PROMOTION_RECEIVER_TYPE = {
+    ALL_MY_FOLLOWERS : "All My Followers",
+    NEARBY_CUSTOMERS : "Nearby Customers",
+    MY_SIZE_AUDIENCE : "My Size Audience",
+
+}
+
+export const ENUM_PROMOTION_SEND_METHOD = {
+    SEND_NOW : "Send Now",
+    SCHEDULED : "Scheduled",
+    SAVE_DRAFT : "Save Draft",
+}
+
+export const ENUM_PAIR_REQUEST_STATUS = {
+    ACCEPTED : "Accepted",
+    REJECTED : "Rejected",
+    PENDING : "Pending",
+    COUNTER: "Counter",
+    DECLINE: "Decline",
+}
+
 
 

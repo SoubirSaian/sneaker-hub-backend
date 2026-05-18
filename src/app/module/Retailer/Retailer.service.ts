@@ -2,7 +2,7 @@ import ApiError from "../../../error/ApiError";
 import { IJwtPayload } from "../../../interface/jwt.interface";
 import { OrderItemModel, OrderModel } from "../Order/Order.model";
 import { ProductModel } from "../Product/Product.model";
-import { IRetailer } from "./Retailer.interface";
+import { IOperationHour, IRetailer } from "./Retailer.interface";
 import RetailerModel from "./Retailer.model";
 
 const filterNearbyRetailers = async (query: Record<string, unknown>) => {
@@ -65,10 +65,49 @@ const retailerChangeOrderStatusService = async (userDetails: IJwtPayload, payloa
     const {profileId} = userDetails;
 }
 
+//update retailer operation hours
+const toggleOperationHour = async (userDetails: IJwtPayload, query: Record<string, unknown>) => {
+    const {profileId} = userDetails;
+
+    const { day } = query;
+
+
+    // const retailer = await RetailerModel.findById(profileId);
+
+    // if (!retailer) {
+    //     throw new ApiError(404, "Retailer not found to toggle operation hour.");
+    // }
+
+    // const operationDay = retailer.operationHour.find( item => item?.day === day);
+
+    // if (!operationDay) {
+    //     throw new ApiError(404, "Day not found.");
+    // }
+
+    // // TOGGLE
+    // operationDay.isOpen = !operationDay.isOpen;
+
+    // await retailer.save();
+
+    const retailer = await RetailerModel.findOne({
+        _id: profileId,
+        "operationHour.day": day
+    });
+
+    const operationHour = retailer.operationHour.find( (item:IOperationHour) => item?.day === day);
+
+    operationHour.isOpen = !operationHour.isOpen;
+
+    await retailer.save();
+
+    return null;
+};
+
 const RetailerServices = { 
     filterNearbyRetailers,
     getRetailerInventory,
-    getALlOrdersOfRetailer
+    getALlOrdersOfRetailer,
+    toggleOperationHour
 };
 
 

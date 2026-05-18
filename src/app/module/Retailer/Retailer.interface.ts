@@ -1,5 +1,12 @@
 import { Types } from "mongoose";
 
+export interface IOperationHour {
+    day: string;
+    openTime: string;
+    closeTime: string;
+    isOpen: boolean;
+}
+
 // Retailer Interface
 export interface IRetailer {
   id: Types.ObjectId;
@@ -18,7 +25,7 @@ export interface IRetailer {
   address: string;
   phone: string;
   website: string;
-  operationHour: {};
+  operationHour: IOperationHour[];
   socialLink: {};
   subscription: Types.ObjectId;
   subscriptionStartDate: Date;

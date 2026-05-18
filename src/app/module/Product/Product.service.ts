@@ -22,11 +22,13 @@ const addProductService = async (
 
     // productData.images = imageUrls;
     
-    const newProduct = await ProductModel.create({
+    const newProduct = new ProductModel({
       retailerId: profileId,
       images: imageUrls,
         ...productData,
     }); 
+
+    await newProduct.save();
 
     if(!newProduct){
         throw new ApiError(500,"Failed to add product.");
