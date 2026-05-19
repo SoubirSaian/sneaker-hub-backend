@@ -81,6 +81,7 @@ export const ENUM_NOTIFICATION_TYPE = {
     PAYMENT_RECEIVED : "PAYMENT_RECEIVED",
     PAYMENT_COMPLETED : "PAYMENT_COMPLETED",
     PAYMENT_FAILED : "PAYMENT_FAILED",
+    NEW_PAIR_REQUEST : "NEW_PAIR_REQUEST",
     // SYSTEM_ALERT : "SYSTEM_ALERT"
 }
 
@@ -121,6 +122,8 @@ export const ENUM_PAIR_REQUEST_STATUS = {
     PENDING : "Pending",
     COUNTER: "Counter",
     DECLINE: "Decline",
+    COMPLETED: "Completed",
+    DELIVEREd: "Delivered",
 }
 
 

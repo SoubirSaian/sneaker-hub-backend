@@ -21,18 +21,33 @@ export interface IPairs {
     createdAt: Date;
 }
 
+export interface IOfferHistory {
+    offeredBy: "Retailer" | "Reseller";
+    price: number;
+    // note?: string;
+    createdAt: Date;
+}
+
 export interface IPairRequest {
     resellerId: Types.ObjectId;
     retailerId: Types.ObjectId;
     pairId: Types.ObjectId;
-    quantity: string;
+    quantity: number;
     variant: {
         gender: string;
         size: number;
     };
     askingPrice: number;
-    unitPrice: number;
-    totalPrice: number;
+     offerHistory: IOfferHistory[];
+    // unitPrice: number;
+    // totalPrice: number;
     status: string;
+    note: string;
+    validity: {
+        validForHours: number;
+        from: Date;
+        to: Date;
+    };
+    dealCompletionType: string;
     createdAt: Date;
 }

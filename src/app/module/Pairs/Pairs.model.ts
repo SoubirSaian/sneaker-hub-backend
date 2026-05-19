@@ -1,6 +1,6 @@
 import { model, Schema, models } from "mongoose";
 import { IPairRequest, IPairs } from "./Pairs.interface";
-import { ENUM_PAIR_REQUEST_STATUS } from "../../../utilities/enum";
+import { ENUM_PAIR_REQUEST_STATUS, ENUM_USER_Type } from "../../../utilities/enum";
 
 const PairsSchema = new Schema<IPairs>({
     resellerId: { type: Schema.Types.ObjectId, ref: "Reseller", required: true },
@@ -27,13 +27,27 @@ const pairRequestSchema = new Schema<IPairRequest>({
     resellerId: { type: Schema.Types.ObjectId, ref: "Reseller", required: true },
     retailerId: { type: Schema.Types.ObjectId, ref: "Retailer", required: true },
     pairId: { type: Schema.Types.ObjectId, ref: "Pairs", required: true },
-    quantity: { type: String, required: true },
+    quantity: { type: Number, default: 1 },
     variant: {  },
     askingPrice: { type: Number, required: true },
-    unitPrice: { type: Number, required: true },
-    totalPrice: { type: Number, required: true },
+    // unitPrice: { type: Number, required: true },
+    // totalPrice: { type: Number, required: true },
+    offerHistory: [
+        {
+            offeredBy: { type: String, enum: Object.values(ENUM_USER_Type), required: true },
+            price: { type: Number, required: true },
+            // note: { type: String },
+            createdAt: { type: Date, default: Date.now }
+        }
+    ],
     status: { type: String, enum: Object.values(ENUM_PAIR_REQUEST_STATUS), default: ENUM_PAIR_REQUEST_STATUS.PENDING },
-
+    note: { type: String },
+    validity: {
+        validForHours: { type: Number, required: true },
+        from: { type: Date, required: true },
+        to: { type: Date, required: true }
+    },
+    dealCompletionType: { type: String, enum: ["Meetup", "Store dropoff","Shipping"], default: "Direct" }
 }, { timestamps: true });
 
 
