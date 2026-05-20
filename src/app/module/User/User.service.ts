@@ -7,6 +7,7 @@ import deleteOldFile from "../../../utilities/deleteFile";
 import { IJwtPayload } from "../../../interface/jwt.interface";
 import { email } from "zod";
 import AuthModel from "../auth/auth.model";
+import BuyerModel from "../Buyer/Buyer.model";
 
 
 
@@ -99,7 +100,7 @@ const getAllUserService = async (query: Record<string,unknown>) => {
 
     //if searchText is true
     if(searchText){
-        const users = await UserModel.find({
+        const users = await BuyerModel.find({
              $or: [
                     { name: { $regex: searchText, $options: "i" } },
                     { email: { $regex: searchText, $options: "i" } },
@@ -118,13 +119,13 @@ const getAllUserService = async (query: Record<string,unknown>) => {
 
     const [users, totalUser] = await Promise.all([
 
-        UserModel.find({})
+        BuyerModel.find({})
             .populate({path: "auth", select:"isBlocked"})
                 .sort({createdAt: -1})
                     .skip(skip).limit(limit)
                         .lean(),
     
-        UserModel.countDocuments({})
+        BuyerModel.countDocuments({})
     ])
 
     const totalPage = Math.ceil(totalUser / limit);

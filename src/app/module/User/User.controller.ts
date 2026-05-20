@@ -53,12 +53,13 @@ const changePassword = catchAsync(async (req, res) => {
 
 const dashboardGetUser = catchAsync(async (req, res) => {
 
-    const result = await UserServices.getAllUserService(req.query);
+    const result:any = await UserServices.getAllUserService(req.query);
     
     sendResponse(res, {
         statusCode: 200,
         success: true,
         message: "Retrieved all users successfully.",
+        meta: result.meta,
         data: result,
     });
 });

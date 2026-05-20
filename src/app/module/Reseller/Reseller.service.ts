@@ -73,6 +73,78 @@ const proposeAnOfferToResellerForPairRequest = async (userDetails: IJwtPayload, 
    
 }
 
+//dashboard
+
+const getAllResellerService = async (query: Record<string,unknown>) => {
+
+    let {page, searchText} = query;
+
+    //if searchText is true
+    if(searchText){
+        const users = await ResellerModel.find({
+             $or: [
+                    { name: { $regex: searchText, $options: "i" } },
+                    { email: { $regex: searchText, $options: "i" } },
+                ]
+        }) .populate({path: "auth", select:"isBlocked"}).lean();
+
+        return users;
+
+    }
+
+    //pagination
+    page = parseInt(page as any) || 1;
+    let limit = 10;
+    let skip = (page as number - 1) * limit;
+
+
+    const [users, totalUser] = await Promise.all([
+
+        ResellerModel.find({})
+            .populate({path: "auth", select:"isBlocked"})
+                .sort({createdAt: -1})
+                    .skip(skip).limit(limit)
+                        .lean(),
+    
+        ResellerModel.countDocuments({})
+    ])
+
+    const totalPage = Math.ceil(totalUser / limit);
+
+    return {
+        meta:{page,limit: 10,total: totalUser, totalPage},
+        reseller: users
+    };
+}
+
+const approveResellerService = async (id: string) => {
+
+    const approvedReseller = await ResellerModel.findById(id).select("name isApproved");
+
+    if(!approvedReseller){
+        throw new ApiError(404,"Reseller not found.");
+    }
+
+    approvedReseller.isApproved = true;
+    await approvedReseller.save();
+
+    let msg = approvedReseller.isApproved ? "approved" : "disapproved";
+
+    //send notification to reseller about approval (implementation pending)
+    // await notification.createNotification({
+    //     toId: id,
+    //     toModel: "Reseller",
+    //     title: "Account Approved",
+    //     description: `Congratulations! Your reseller account has been approved. You can now start listing your pairs and receiving offers from retailers.`,
+    //     type: ENUM_NOTIFICATION_TYPE.ACCOUNT_APPROVAL,
+    //     referenceId: id,
+    //     referenceModel: "Reseller"
+    // });
+
+    return msg;
+    
+}
+
 const ResellerServices = { 
     resellerHomePageStatDataService
 };

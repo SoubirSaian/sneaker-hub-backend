@@ -103,6 +103,86 @@ const toggleOperationHour = async (userDetails: IJwtPayload, query: Record<strin
     return null;
 };
 
+//dashboard
+
+const getAllRetailerStoreService = async (query: Record<string,unknown>) => {
+
+    let {page, searchText, approvalStatus} = query;
+
+    let filter: any= {};
+
+    //if approvalStatus is true
+    if(approvalStatus){
+        filter.isApproved = approvalStatus === "true" ? true : false;
+    }
+
+    //if searchText is true
+    if(searchText){
+        const users = await RetailerModel.find({
+            ...filter,
+             $or: [
+                    { name: { $regex: searchText, $options: "i" } },
+                    { email: { $regex: searchText, $options: "i" } },
+                ]
+        }) .populate({path: "auth", select:"isBlocked"}).lean();
+
+        return users;
+
+    }
+
+
+    //pagination
+    page = parseInt(page as any) || 1;
+    let limit = 10;
+    let skip = (page as number - 1) * limit;
+
+
+    const [users, totalUser] = await Promise.all([
+
+        RetailerModel.find(filter)
+            .populate({path: "auth", select:"isBlocked"})
+                .sort({createdAt: -1})
+                    .skip(skip).limit(limit)
+                        .lean(),
+    
+        RetailerModel.countDocuments({})
+    ])
+
+    const totalPage = Math.ceil(totalUser / limit);
+
+    return {
+        meta:{page,limit: 10,total: totalUser, totalPage},
+        stores: users
+    };
+}
+
+const approveRetailerService = async (id: string) => {
+
+    const approvedRetailer = await RetailerModel.findById(id).select("name isApproved");
+
+    if(!approvedRetailer){
+        throw new ApiError(404, "Retailer not found to approve.");
+    }
+
+    approvedRetailer.isApproved = !approvedRetailer.isApproved;
+
+    await approvedRetailer.save();
+
+    let msg = approvedRetailer.isApproved ? "approved" : "disapproved";
+
+    //send notification to retailer about approval status
+    // await NotificationModel.create({
+    //     user: approvedRetailer._id,
+    //     title: `Your store has been ${msg}`,
+    //     description: `Your store "${approvedRetailer.name}" has been ${msg} by admin. You can now ${approvedRetailer.isApproved ? "start listing your products and receive orders." : "not receive orders until it's approved again."}`,
+    //     type: ENUM_NOTIFICATION_TYPE.RETAILER_APPROVAL_STATUS,
+    //     referenceId: approvedRetailer._id.toString(),
+    //     referenceModel: "Retailer"
+    // });
+
+    return msg;
+}
+
 const RetailerServices = { 
     filterNearbyRetailers,
     getRetailerInventory,
