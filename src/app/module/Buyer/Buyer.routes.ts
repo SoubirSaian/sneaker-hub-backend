@@ -1,5 +1,5 @@
 import express from "express";
-import {auth} from "../../middlewares/auth";
+import {auth, authorizeUser} from "../../middlewares/auth";
 import validateRequest from "../../middlewares/validateRequest";
 import BuyerValidations from "./Buyer.validation";
 import BuyerController from "./Buyer.controller";
@@ -7,6 +7,35 @@ import BuyerController from "./Buyer.controller";
 
 const BuyerRouter = express.Router();
 
+BuyerRouter.post(
+    "/set-buyer-notification-alerts",
+    authorizeUser,
+    BuyerController.setBuyerNotificationAlertsController
+);
+
+BuyerRouter.post(
+    "/set-buyer-shoe-size",
+    authorizeUser,
+    BuyerController.addSelectedShoeSizeController
+);
+
+BuyerRouter.post(
+    "/add-buyer-interested-brands",
+    authorizeUser,
+    BuyerController.addBrandsOfInterestController
+);
+
+BuyerRouter.get(
+    "/get-buyer-interests",
+    authorizeUser,
+    BuyerController.getBuyersInterestsDataController
+);
+
+BuyerRouter.patch(
+    "/update-buyer-profile",
+    authorizeUser,
+    BuyerController.updateBuyerProfileController
+);
 
 
 export default BuyerRouter;

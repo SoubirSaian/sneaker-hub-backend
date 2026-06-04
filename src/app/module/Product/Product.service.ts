@@ -69,6 +69,30 @@ const searchProductsService = async (userDetails: IJwtPayload, query: Record<str
       .limit(10)
       .lean();
 
+       /*
+     |--------------------------------------------------------------------------
+     | 3. INCREASE totalSearchCount
+     |--------------------------------------------------------------------------
+     | Increment count for searched products
+     */
+
+    if (products.length > 0) {
+      const productIds = products.map((product) => product._id);
+
+      await ProductModel.updateMany(
+        {
+          _id: {
+            $in: productIds,
+          },
+        },
+        {
+          $inc: {
+            totalSearchCount: 1,
+          },
+        }
+      );
+    }
+
       const recent = await RecentSearchModel.findOneAndUpdate(
       {
         buyerId: profileId,
@@ -82,6 +106,8 @@ const searchProductsService = async (userDetails: IJwtPayload, query: Record<str
         new: true,
       }
     );
+
+    
 
     if(!recent){
         const newRecentSearch = await RecentSearchModel.create(
@@ -120,7 +146,7 @@ const getTrendingNowAndRecentSearchesSevice = async (userDetails: IJwtPayload) =
      |--------------------------------------------------------------------------
      */
 
-    const trendingProducts = await ProductModel.find()
+    const trendingProducts = await ProductModel.find({})
       .sort({ totalSearchCount: -1 })
       .limit(10)
       .select("_id name brand price image totalSearchCount")
@@ -173,7 +199,11 @@ const deleteRecentSearchService = async (userDetails: IJwtPayload, recentSearchI
 }
 
 const ProductServices = { 
-
+    addProductService,
+    searchProductsService,
+    getTrendingNowAndRecentSearchesSevice,
+    getProductDetailsByIdService,
+    deleteRecentSearchService
  };
 
 export default ProductServices;

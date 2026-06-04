@@ -13,7 +13,7 @@ export interface IOrder {
     orderStatus: string;
     paymentStatus: string;
     paymentMethod: string;
-    type: string;
+    orderType: string;
     // selectedSize: number;
     // quantity: number;
     // unitPrice: number;

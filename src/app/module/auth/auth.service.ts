@@ -15,7 +15,7 @@ import { ENUM_USER_Type } from "../../../utilities/enum";
 import ResellerModel from "../Reseller/Reseller.model";
 import RetailerModel from "../Retailer/Retailer.model";
 import BuyerModel from "../Buyer/Buyer.model";
-import { ref } from "process";
+
 
 
 
@@ -26,6 +26,7 @@ const registerUserService = async (payload: TRegisterUser) => {
     try {
 
         const { email, password,name, userType, shoeSize, latitude, longitude } = payload;
+        // console.log("Payload received in service:", payload);
 
         let UserModel: any;
         //selected user type and create profile accordingly
@@ -42,6 +43,7 @@ const registerUserService = async (payload: TRegisterUser) => {
             default:
                 throw new ApiError(400, "Invalid user type");
         }
+        // console.log("Selected UserModel:", UserModel.modelName);
 
         const emailExist = await AuthModel.exists({
             email: email.toLowerCase()
@@ -55,15 +57,17 @@ const registerUserService = async (payload: TRegisterUser) => {
         const { code, expiredAt } = generateVerifyCode(10);
 
         const userDataPayload: any = {
-            refModel: UserModel,
+            refModel: UserModel.modelName,
             email: email.toLowerCase(),
             password,
             role: userType,
             verificationCode: code,
         };
+        // console.log("User data payload prepared:", userDataPayload);
 
         // Create Auth user
         const user = await AuthModel.create([userDataPayload], { session });
+        // console.log("Auth user created:", user);
 
         const createdUser = user[0];
 
@@ -84,6 +88,7 @@ const registerUserService = async (payload: TRegisterUser) => {
             ],
             { session }
         );
+        // console.log("Profile created:", profile);
 
         const createdProfile = profile[0];
 
@@ -91,13 +96,13 @@ const registerUserService = async (payload: TRegisterUser) => {
         createdUser.profile = createdProfile._id;
         await createdUser.save({ session });
 
-        // Commit transaction
-        await session.commitTransaction();
-        session.endSession();
+        // // Commit transaction
+        // await session.commitTransaction();
+        // session.endSession();
 
         // Send email AFTER commit
         await sendVerificationEmail(email, {
-            name: "User",
+            name: name,
             code: code,
         });
 
@@ -114,6 +119,10 @@ const registerUserService = async (payload: TRegisterUser) => {
         session.endSession();
 
         throw error;
+    } finally {
+        // Commit transaction
+        await session.commitTransaction();
+        session.endSession();
     }
 
 }
@@ -180,10 +189,10 @@ const loginUserService = async (payload: TLoginUser) => {
 const verifyCode = async (payload:{email: string, verifyCode: string}) => {
     const { email, verifyCode } = payload;
 
-    const user = await UserModel.findOne({ email: email }).select("profile email role verificationCode isEmailVerified");
+    const user = await AuthModel.findOne({ email: email }).select("profile email role verificationCode isEmailVerified");
 
     if (!user) {
-        throw new ApiError(404, 'User not found to verify otp');
+        throw new ApiError(404, 'User not found to verify otp.');
     }
 
     // if (user.codeExpireIn < new Date(Date.now())) {
@@ -238,7 +247,7 @@ const verifyCode = async (payload:{email: string, verifyCode: string}) => {
 const sendVerifyCodeService = async (payload:{email: string}) => {
     const { email } = payload;
 
-    const user = await UserModel.findOne({ email: email });
+    const user = await AuthModel.findOne({ email: email });
 
     if (!user) {
         throw new ApiError(404, 'User not found to send otp');
@@ -263,7 +272,7 @@ const sendVerifyCodeService = async (payload:{email: string}) => {
 const resetPasswordService = async (payload: IResetPassword) => {
     const { email, newPassword } = payload;
 
-    const user = await UserModel.findOne({ email: email });
+    const user = await AuthModel.findOne({ email: email });
 
     if (!user) {
         throw new ApiError(404, 'This user does not exist to reset password');

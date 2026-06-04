@@ -12,10 +12,10 @@ const followRetailerService = async (userDetails: IJwtPayload ,retailerId: strin
     const { profileId } = userDetails;
 
     // Check if the follow relationship already exists
-    const existingFollow = await FollowModel.findOne({ buyerId: profileId, retailerId });
+    const existingFollow = await FollowModel.findOne({ buyerId: profileId, retailerId }).lean();
 
     if (existingFollow) {
-        throw new ApiError(400, "You are already following this retailer.");
+        throw new ApiError(400, "You are still following this retailer.");
     }
 
     // Create a new follow relationship
@@ -200,7 +200,7 @@ const removeFromWishlistService = async (wishListId: string) => {
 const EngagementServices = { 
     followRetailerService, 
     unfollowRetailerService ,
-
+    addToWishlistService,
     addReviewService,
     addToWantedlistService,
     removeFromWishlistService

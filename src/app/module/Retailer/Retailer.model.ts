@@ -14,6 +14,7 @@ const defaultOperationHours = () => [
 
 const RetailerSchema = new Schema<IRetailer>({
     auth: { type: Schema.Types.ObjectId, required: true, ref: "Auth" },
+    badge: { type: String, default: "" },
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     coverImage: { type: String, default: "" },
@@ -56,6 +57,9 @@ const RetailerSchema = new Schema<IRetailer>({
     averageRating:{type:Number,default:0},
     isApproved:{type:Boolean,default:false},
 }, { timestamps: true });
+
+//to enable geospatial queries efficiently
+RetailerSchema.index({ location: "2dsphere" });
 
 const RetailerModel = models.Retailer || model<IRetailer>("Retailer", RetailerSchema);
 

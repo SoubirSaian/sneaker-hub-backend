@@ -1,14 +1,15 @@
 import { z } from "zod";
 
         
-const u = z.object({
-    body: z.object({
-        name: z.string().optional(),
-        phone: z.string().optional(),
-        address: z.string().optional(),
+const addToWishListValidation = z.object({
+    query: z.object({
+        productId: z.string().length(24, "Invalid product ID"),
+        retailerId: z.string().length(24, "Invalid retailer ID")
     }),
 });
 
-const EngagementValidations = { u };
+const EngagementValidations = { 
+    addToWishListValidation 
+};
 
 export default EngagementValidations;

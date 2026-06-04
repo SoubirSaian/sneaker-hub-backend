@@ -1,4 +1,4 @@
-import { CANCELLED } from "dns"
+// import { CANCELLED } from "dns"
 
 export const ENUM_USER_Type = {
     BUYER: "Buyer",
@@ -11,6 +11,11 @@ export const ENUM_ORDER_TYPE = {
     BUY_NOW: "Buy Now",
     HOLD: "Hold",
     
+}
+
+export const ENUM_PRODUCT_TYPE = {
+  SNEAKERS: "Sneakers",
+  CLOTHING: "Clothing",  
 }
 
 export const ENUM_SUBSCRIPTION_TYPE = {
@@ -59,6 +64,7 @@ export const ENUM_CART_STATUS = {
 
 export const ENUM_PAYMENT_STATUS = {
    PENDING: "Pending",
+   PARTIALLY_PAID: "Partially Paid",
    PAID: "Paid",
    FAILED: "Failed",
    REFUNDED: "Refunded",

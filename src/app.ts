@@ -25,7 +25,7 @@ app.use('/', allRouter);
 
 
 app.get('/', (req, res) => {
-  res.send("Loukarver server is running ---- Welcome --- Go Ahead");
+  res.send("Sneaker hub server is running ---- Welcome to Sneaker Hub API.");
 });
 
 

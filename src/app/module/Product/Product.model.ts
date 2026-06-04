@@ -1,11 +1,12 @@
 import { model, Schema, models } from "mongoose";
 import { IProduct, IRecentSearch } from "./Product.interface";
-import { ENUM_PRODUCT_AVAILABILITY } from "../../../utilities/enum";
+import { ENUM_PRODUCT_AVAILABILITY, ENUM_PRODUCT_TYPE } from "../../../utilities/enum";
 import { getAvailability } from "../../middlewares/mongooseMiddleware";
 
 //Product schema
 const ProductSchema = new Schema<IProduct>({
     retailerId: { type: Schema.Types.ObjectId, required: true, ref: "Retailer" },
+    type: { type: String, enum: Object.values(ENUM_PRODUCT_TYPE), default: ENUM_PRODUCT_TYPE.SNEAKERS },
     name: { type: String, required: true },
     description: { type: String, default: "" },
     price: { type: Number, required: true },

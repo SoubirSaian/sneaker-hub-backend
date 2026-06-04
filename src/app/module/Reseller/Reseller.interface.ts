@@ -3,6 +3,7 @@ import { Types } from "mongoose";
 export interface IReseller {
   id: Types.ObjectId;
   auth: Types.ObjectId;
+  badge: string;
   name: string;
   email: string;
   image: string;

@@ -1,19 +1,39 @@
+import { AuthRequest } from "../../../interface/authRequest";
 import catchAsync from "../../../utilities/catchasync";
 import sendResponse from "../../../utilities/sendResponse";
 import ResellerServices from "./Reseller.service";
 
-const u = catchAsync(async (req, res) => {
+const resellerHomePageStatDataController = catchAsync(async (req, res) => {
 
-    const result = await ResellerServices.u();
+    const { user } = req as AuthRequest;
+
+    const result = await ResellerServices.resellerHomePageStatDataService(user);
 
     sendResponse(res, {
         statusCode: 200,
         success: true,
-        message: "P",
+        message: "Reseller home page stat data fetched successfully",
         data: result,
     });
 });
 
-const ResellerController = { u };
+const proposeAnOfferToResellerForPairRequestController = catchAsync(async (req, res) => {
+
+    const { user } = req as AuthRequest;
+
+    const result = await ResellerServices.proposeAnOfferToResellerForPairRequest(user, req.body);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Offer proposed successfully",
+        data: result,
+    });
+});
+
+const ResellerController = { 
+    resellerHomePageStatDataController,
+    proposeAnOfferToResellerForPairRequestController
+ };
 
 export default ResellerController;

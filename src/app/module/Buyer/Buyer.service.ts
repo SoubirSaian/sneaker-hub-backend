@@ -1,7 +1,10 @@
+import mongoose, { mongo } from "mongoose";
 import ApiError from "../../../error/ApiError";
 import { IJwtPayload } from "../../../interface/jwt.interface";
 import deleteOldFile from "../../../utilities/deleteFile";
+import { ENUM_PRODUCT_AVAILABILITY } from "../../../utilities/enum";
 import { FollowModel, WishListModel } from "../Engagement/Engagement.model";
+import RetailerModel from "../Retailer/Retailer.model";
 import { IBuyer, IBuyerNotification } from "./Buyer.interface";
 import BuyerModel from "./Buyer.model";
 
@@ -9,7 +12,7 @@ const setBuyerNotificationAlerts = async (userDetails: IJwtPayload, payload: IBu
 
     const { profileId } = userDetails;
 
-    const buyer = await BuyerModel.findById(profileId);
+    const buyer:any = await BuyerModel.findById(profileId);
 
     if (!buyer) {
         throw new ApiError(404, "Buyer not found");
@@ -21,14 +24,14 @@ const setBuyerNotificationAlerts = async (userDetails: IJwtPayload, payload: IBu
 
     await buyer.save();
 
-    return buyer;
+    return buyer?.notification;
 };
 
 const addSelectedShoeSize = async (userDetails: IJwtPayload, payload: { label: string; size: number }[]) => {
 
     const { profileId } = userDetails;
 
-    const buyer = await BuyerModel.findById(profileId);
+    const buyer:any = await BuyerModel.findById(profileId);
 
     if (!buyer) {
         throw new ApiError(404, "Buyer not found");
@@ -38,14 +41,14 @@ const addSelectedShoeSize = async (userDetails: IJwtPayload, payload: { label: s
 
     await buyer.save();
 
-    return buyer;
+    return buyer?.selectedShoeSize;
 }
 
 const addBrandsOfInterest = async (userDetails: IJwtPayload, payload: string[]) => {
 
     const { profileId } = userDetails;
 
-    const buyer = await BuyerModel.findById(profileId);
+    const buyer:any = await BuyerModel.findById(profileId);
 
     if (!buyer) {
         throw new ApiError(404, "Buyer not found");
@@ -55,7 +58,7 @@ const addBrandsOfInterest = async (userDetails: IJwtPayload, payload: string[]) 
 
     await buyer.save();
 
-    return buyer;
+    return buyer?.brands;
 }
 
 const getBuyersInterestsData = async (userDetails: IJwtPayload) => {
@@ -118,6 +121,116 @@ const updateBuyerProfileService = async (
 
     return updatedProfile;
 };
+
+//buer home page api
+
+const getNearbyProductsForBuyer = async (userDetails: IJwtPayload, query: Record<string,unknown>) => {
+    const { productType = 'all' , latitude, longitude } = query; //productType = all,Sneakers,Clothing
+
+    // const { productType = "all", latitude, longitude } = query;
+
+    const maxDistance = 50000; // 50 KM
+
+    const matchStage: any = {
+        availability: { $in: [ENUM_PRODUCT_AVAILABILITY.ACTIVE, ENUM_PRODUCT_AVAILABILITY.LOW_STOCK] },
+    };
+
+    if (productType !== "all") {
+        matchStage.type = productType;
+    }
+
+    const products = await RetailerModel.aggregate([
+        {
+            $geoNear: {
+                near: {
+                    type: "Point",
+                    coordinates: [
+                        Number(longitude),
+                        Number(latitude),
+                    ],
+                },
+                distanceField: "distance",
+                maxDistance,
+                spherical: true,
+                query: {
+                    isApproved: true,
+                },
+            },
+        },
+
+        {
+            $lookup: {
+                from: "products",
+                localField: "_id",
+                foreignField: "retailerId",
+                as: "products",
+                pipeline: [
+                    {
+                        $match: matchStage,
+                    },
+                ],
+            },
+        },
+
+        {
+            $unwind: "$products",
+        },
+
+        {
+            $project: {
+                _id: "$products._id",
+                retailerId: "$_id",
+                retailerName: "$name",
+                retailerImage: "$image",
+                distance: 1,
+
+                name: "$products.name",
+                price: "$products.price",
+                images: "$products.images",
+                type: "$products.type",
+                brand: "$products.brand",
+                availability: "$products.availability",
+                createdAt: "$products.createdAt",
+            },
+        },
+
+        {
+            $sort: {
+                distance: 1,
+            },
+        },
+        {
+            $limit: 5
+        }
+    ]);
+
+
+    return products;
+
+}
+
+const getBuyersStoreBrandWishlistdataService = async (userDetails: IJwtPayload) => {
+    const { profileId } = userDetails;
+
+    const profileObjectId = new mongoose.Types.ObjectId(profileId);
+
+    const pipeline1 = [];
+    const pipeline2 = [];
+
+    const [brands, stores, wishlist] = await Promise.all([
+        BuyerModel.findById(profileId).select("brands").lean(),
+
+        FollowModel.find({ buyerId: profileId }).populate("retailerId", "name").lean(),
+
+        WishListModel.find({ buyerId: profileId }).populate("productId", "name").lean()
+    ]);
+
+    return {
+        brands: brands || [],
+        stores: stores || [],
+        wishlist: wishlist || []
+    };
+}
 
 const BuyerServices = { 
     setBuyerNotificationAlerts,

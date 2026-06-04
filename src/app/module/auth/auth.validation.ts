@@ -24,7 +24,8 @@ const registerUserValidationSchema = z.object({
       .min(6, "Password must be at least 6 characters"),
 
     shoeSize: z
-      .object({})
+      .number()
+      .min(1, "Shoe size must be at least 1")
       .optional(),
 
     latitude: z

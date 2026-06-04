@@ -47,7 +47,7 @@ const getRetailerInventory = async (userDetails: IJwtPayload,query: Record<strin
 
 }
 
-const getALlOrdersOfRetailer = async (userDetails: IJwtPayload, query: Record<string, unknown>) => {
+const getAllOrdersOfRetailer = async (userDetails: IJwtPayload, query: Record<string, unknown>) => {
     const {profileId} = userDetails;
 
     const {orderStatus} = query;
@@ -183,10 +183,12 @@ const approveRetailerService = async (id: string) => {
     return msg;
 }
 
+
+
 const RetailerServices = { 
     filterNearbyRetailers,
     getRetailerInventory,
-    getALlOrdersOfRetailer,
+    getAllOrdersOfRetailer,
     toggleOperationHour
 };
 

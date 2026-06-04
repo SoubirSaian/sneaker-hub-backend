@@ -146,7 +146,8 @@ const approveResellerService = async (id: string) => {
 }
 
 const ResellerServices = { 
-    resellerHomePageStatDataService
+    resellerHomePageStatDataService,
+    proposeAnOfferToResellerForPairRequest
 };
 
 

@@ -4,17 +4,21 @@ import { ENUM_ORDER_ITEM_STATUS, ENUM_ORDER_STATUS, ENUM_ORDER_TYPE, ENUM_PAYMEN
 
 //order model schema
 const OrderSchema = new Schema<IOrder>({
+
     buyerId: { type: Schema.Types.ObjectId, ref: "Buyer", required: true },
     orderNumber: { type: String, required: true, unique: true },
+
     subtotal: { type: Number, required: true },
     shippingCharge: { type: Number, required: true },
     discountAmount: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
     totalItems: { type: Number, required: true },
+
     orderStatus: { type: String, enum: Object.values(ENUM_ORDER_STATUS), default: ENUM_ORDER_STATUS.PLACED },
-    type: { type: String, enum: Object.values(ENUM_ORDER_TYPE), default: ENUM_ORDER_TYPE.BUY_NOW },
+    orderType: { type: String, enum: Object.values(ENUM_ORDER_TYPE), default: ENUM_ORDER_TYPE.BUY_NOW },
     paymentStatus: { type: String, enum: Object.values(ENUM_PAYMENT_STATUS), default: ENUM_PAYMENT_STATUS.PENDING },
-    paymentMethod: { type: String, enum: Object.values(ENUM_PAYMENT_METHOD), required: true },
+    paymentMethod: { type: String, enum: Object.values(ENUM_PAYMENT_METHOD), default: ENUM_PAYMENT_METHOD.STRIPE },
+
     shippingAddress: {
         name: { type: String, required: true },
         phone: { type: String, required: true },
@@ -24,6 +28,7 @@ const OrderSchema = new Schema<IOrder>({
         lat: { type: Number, required: true },
         lng: { type: Number, required: true }
     },
+    
     pickupTime: { type: Date, required: true },
 }, { timestamps: true });
 

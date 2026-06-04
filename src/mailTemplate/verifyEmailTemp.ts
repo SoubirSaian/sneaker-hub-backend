@@ -69,13 +69,13 @@ const verifyEmailTemp = (data: TEmailTemplate) => `
      
     <body>
       <div class="container">
-        <h1>Welcome to PBFS!</h1>
+        <h1>Welcome to Sneakershub!</h1>
         <p>Hello, ${data.name}</p>
         <p>Thank you for choosing tow factor authentication. To verify your recovery email and secure your account, please use the one-time password (OTP) below:</p>
         <h3>Your Otp: ${data.code}</h3>
         <p>This code will expire in 10 minutes. If you didnt request this, please ignore this email.</p>
         
-        <p>Best Regards,<br>Team PBFS</p>
+        <p>Best Regards,<br>Team Sneakershub</p>
       </div>
       <div class="footer">
         <a href="https://profitablebusinessesforsale.com/"><img src="https://pbfsimage.s3.eu-north-1.amazonaws.com/Pbfs_logo.png" class="logo-img"/></a>

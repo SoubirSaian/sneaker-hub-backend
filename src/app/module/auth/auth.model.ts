@@ -6,12 +6,12 @@ import { ENUM_USER_Type } from "../../../utilities/enum";
 
 
 const AuthSchema = new Schema<IAuth>({
-    profile: { type: Schema.Types.ObjectId, ref: "Auth" },
+    profile: { type: Schema.Types.ObjectId,  refPath: "refModel"  },
     refModel: { type: String, required: true },
     // name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    phone: { type: String, required: true },
+    phone: { type: String, default: "" },
     role: { type: String, required: true , enum: Object.values(ENUM_USER_Type)},
     verificationCode: { type: String, default: "" },
     isEmailVerified: { type: Boolean, default: false },

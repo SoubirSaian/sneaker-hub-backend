@@ -11,6 +11,7 @@ export interface IOperationHour {
 export interface IRetailer {
   id: Types.ObjectId;
   auth: Types.ObjectId;
+  badge: string;
   name: string;
   email: string;
   coverImage: string;

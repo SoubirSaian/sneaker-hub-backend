@@ -3,6 +3,7 @@ import { IReseller } from "./Reseller.interface";
 
 const ResellerSchema = new Schema<IReseller>({
     auth: { type: Schema.Types.ObjectId, required: true, ref: "Auth" },
+    badge: { type: String, default: "" },
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     image: { type: String, default: "" },

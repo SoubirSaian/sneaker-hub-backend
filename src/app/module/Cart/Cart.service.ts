@@ -1,7 +1,7 @@
 import ApiError from "../../../error/ApiError";
 import { IJwtPayload } from "../../../interface/jwt.interface";
 import { ENUM_CART_STATUS } from "../../../utilities/enum";
-import ProductModel from "../Product/Product.model";
+import {ProductModel} from "../Product/Product.model";
 import { ICart, TCartItem } from "./Cart.interface";
 import CartModel from "./Cart.model";
 
@@ -84,13 +84,14 @@ const increaseCartItemQuantityService = async (userDetails: IJwtPayload, cartIte
 
 };
 
-const applypromoCodeService = async (userDetails: IJwtPayload, promoCode: string) => {
+const applypromoCodeService = async (userDetails: IJwtPayload, query: Record<string, unknown>) => {
 
     const { profileId } = userDetails;
 
     let totalPriceSum = 0;
 
     // Validate promo code and calculate discount
+    
     // This is a placeholder implementation, you should replace it with your actual promo code validation logic
     const discountpercent = 10; // Assuming a flat $10 discount for demonstration
 
@@ -137,7 +138,8 @@ const CartServices = {
     addToCartService,
     deleteCartItemService,
     increaseCartItemQuantityService,
-    applypromoCodeService
+    applypromoCodeService,
+    placeOrderFromCartService
 };
 
 export default CartServices;

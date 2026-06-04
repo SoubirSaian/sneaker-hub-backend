@@ -1,19 +1,26 @@
+import { AuthRequest } from "../../../interface/authRequest";
 import catchAsync from "../../../utilities/catchasync";
 import sendResponse from "../../../utilities/sendResponse";
 import PromotionServices from "./Promotion.service";
 
-const u = catchAsync(async (req, res) => {
+const createNewPromotionController = catchAsync(async (req, res) => {
 
-    const result = await PromotionServices.u();
+    const { user } = req as AuthRequest;
+
+    const result = await PromotionServices.createNewPromotionService(user, req.body);
 
     sendResponse(res, {
-        statusCode: 200,
+        statusCode: 201,
         success: true,
-        message: "P",
+        message: "Promotion created successfully",
         data: result,
     });
 });
 
-const PromotionController = { u };
+const PromotionController = { 
+    createNewPromotionController
+ };
+
+
 
 export default PromotionController;

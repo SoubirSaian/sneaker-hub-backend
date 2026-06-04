@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 
 export interface IProduct {
     retailerId: Types.ObjectId;
+    type: string;
     name: string;
     description: string;
     price: number;
