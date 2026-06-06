@@ -27,6 +27,12 @@ export interface IOrder {
         city: string;
         area?: string;
     };
+
+    holdingTime?: number;
+    holdingStartTime?: Date;
+    holdingEndTime?: Date;
+    partialPayment?: number;
+
     pickupTime: Date;
     createdAt: Date;
 }

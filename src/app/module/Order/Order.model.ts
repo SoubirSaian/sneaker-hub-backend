@@ -28,7 +28,11 @@ const OrderSchema = new Schema<IOrder>({
         lat: { type: Number, required: true },
         lng: { type: Number, required: true }
     },
-    
+
+    holdingTime: { type: Number, default: 0 },
+    holdingStartTime: { type: Date , default: null },
+    holdingEndTime: { type: Date, default: null },
+
     pickupTime: { type: Date, required: true },
 }, { timestamps: true });
 

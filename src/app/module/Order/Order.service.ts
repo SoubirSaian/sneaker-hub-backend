@@ -117,17 +117,13 @@ const buyNowService = async (
 
         const unitPrice = product.price;
 
-        const subtotal =
-            unitPrice * payload.quantity;
+        const subtotal = unitPrice * payload.quantity;
 
         const shippingCharge = 100;
 
         const discountAmount = 0;
 
-        const totalAmount =
-            subtotal +
-            shippingCharge -
-            discountAmount;
+        const totalAmount = subtotal + shippingCharge - discountAmount;
 
         // =====================================================
         // 5. CREATE ORDER
