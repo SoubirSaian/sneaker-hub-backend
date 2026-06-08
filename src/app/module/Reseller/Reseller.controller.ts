@@ -21,12 +21,12 @@ const proposeAnOfferToResellerForPairRequestController = catchAsync(async (req, 
 
     const { user } = req as AuthRequest;
 
-    const result = await ResellerServices.proposeAnOfferToResellerForPairRequest(user, req.body);
+    const result = await ResellerServices.makeRequestForPairService(user, req.body);
 
     sendResponse(res, {
-        statusCode: 200,
+        statusCode: 201,
         success: true,
-        message: "Offer proposed successfully",
+        message: "Pair request submitted successfully",
         data: result,
     });
 });

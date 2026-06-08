@@ -49,6 +49,9 @@ const BuyerSchema = new Schema<IBuyer>({
     subscriptionEndDate:{type:Date},
 }, { timestamps: true });
 
+//to enable geospatial queries on the location field, we need to create a 2dsphere index on it. This allows us to perform queries like finding nearby buyers based on their location.
+BuyerSchema.index({ location: "2dsphere"});
+
 const BuyerModel = models.Buyer || model<IBuyer>("Buyer", BuyerSchema);
 
 export default BuyerModel;

@@ -1,5 +1,6 @@
 import ApiError from "../../../error/ApiError";
 import { IJwtPayload } from "../../../interface/jwt.interface";
+import deleteOldFile from "../../../utilities/deleteFile";
 import { IProduct } from "./Product.interface";
 import {ProductModel, RecentSearchModel} from "./Product.model";
 
@@ -35,6 +36,60 @@ const addProductService = async (
     }
 
     return newProduct;
+}
+
+const editProductService = async (
+    userDetails: IJwtPayload,
+    productId: string,
+    files: Express.Multer.File[],
+    productData: Partial<IProduct>
+) => {
+    const {profileId} = userDetails;
+
+    const product = await ProductModel.findOne({ _id: productId, retailerId: profileId });
+
+    if (!product) {
+        throw new ApiError(404, "Product not found or you do not have permission to edit this product.");
+    }
+
+    const existingImages = product.images || [];
+
+    if (files && files.length > 0) {
+        const imageUrls = files.map(file => {
+            return `uploads/product-image/${file.filename}`;
+        });
+        product.images = imageUrls;
+    }
+
+    Object.assign(product, productData);
+
+    await product.save();
+
+    if(!product){
+        throw new ApiError(500,"Failed to edit product.");
+    }
+
+    //delete old images from server if new images are uploaded
+    if (files && files.length > 0 && existingImages.length > 0) {
+        existingImages.forEach( (imageUrl:any) => {
+            // Implement your logic to delete the image file from the server
+           deleteOldFile(imageUrl);
+        });
+    }
+
+    return product;
+}
+
+const deleteProductService = async (userDetails: IJwtPayload, productId: string) => {
+    const {profileId} = userDetails;
+
+    const deleted = await ProductModel.findOneAndDelete({ _id: productId, retailerId: profileId });
+
+    if (!deleted) {
+        throw new ApiError(404, "Product not found or you do not have permission to delete this product.");
+    }
+
+    return null;
 }
 
 // product-search.service.ts

@@ -14,8 +14,9 @@ ResellerRouter.get(
 );
 
 ResellerRouter.post(
-    "/propose-an-offer-to-reseller-for-pair-request",
+    "/make-pair-request",
     authorizeUser,
+    validateRequest(ResellerValidations.makeRequestForPairValidationSchema),
     ResellerController.proposeAnOfferToResellerForPairRequestController
 );
 

@@ -8,14 +8,18 @@ const PairsSchema = new Schema<IPairs>({
     images: { type: String, required: true },
     brand: { type: String, required: true },
     quantity: { type: String, required: true },
-    details: { type: String, required: true },
+    details: { type: String, default: "" },
     variant: {
         gender: { type: String, required: true },
         size: { type: Number, required: true }
     },
     askingPrice: { type: Number, required: true },
     // size: { type: Number, required: true },
-    type: { type: String, required: true },
+    type: { 
+        type: String, 
+        enum: ["New", "Never worn", "Worn once", "Worn few times", "Used - Good condition", "Used - Fair condition"],
+        default: "New"
+    },
     isVisibleToStore: { type: Boolean, default: true },
     isShowAskingPrice: { type: Boolean, default: true },
     isAllowDirectRequest: { type: Boolean, default: false },
@@ -28,7 +32,10 @@ const pairRequestSchema = new Schema<IPairRequest>({
     retailerId: { type: Schema.Types.ObjectId, ref: "Retailer", required: true },
     pairId: { type: Schema.Types.ObjectId, ref: "Pairs", required: true },
     quantity: { type: Number, default: 1 },
-    variant: {  },
+    variant: [{
+        gender: { type: String, default: "" },
+        size: { type: Number, default: 0 }
+    }],
     askingPrice: { type: Number, required: true },
     // unitPrice: { type: Number, required: true },
     // totalPrice: { type: Number, required: true },
@@ -47,7 +54,7 @@ const pairRequestSchema = new Schema<IPairRequest>({
         from: { type: Date, required: true },
         to: { type: Date, required: true }
     },
-    dealCompletionType: { type: String, enum: ["Meetup", "Store dropoff","Shipping"], default: "Direct" }
+    dealCompletionType: { type: String, enum: ["Meetup", "Store dropoff","Shipping","Direct"], default: "Meetup" }
 }, { timestamps: true });
 
 

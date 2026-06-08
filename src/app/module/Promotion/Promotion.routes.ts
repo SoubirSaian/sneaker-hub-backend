@@ -10,7 +10,7 @@ const PromotionRouter = express.Router();
 PromotionRouter.post(
     "/create-promotion",
     authorizeUser,
-    // validateRequest(PromotionValidations.createPromotionZodSchema),
+    validateRequest(PromotionValidations.createNewPromotionValidation),
     PromotionController.createNewPromotionController
 );
 

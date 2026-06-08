@@ -18,7 +18,7 @@ const conversationSchema = new Schema<IConversation>(
     status: {
       type: String,
       enum: ["Pending", "Accepted"],
-      default: "Pending"
+      default: "Accepted"
     }
   },
   { timestamps: true }

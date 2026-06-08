@@ -29,49 +29,57 @@ const resellerHomePageStatDataService = async (userDetails: IJwtPayload) => {
     };
 };
 
-//make an offer to reseller's pair request
-const proposeAnOfferToResellerForPairRequest = async (userDetails: IJwtPayload, payload: any) => {
+//make an offer request to reseller's pair request
+const makeRequestForPairService = async (userDetails: IJwtPayload, payload: any) => {
     const {profileId} = userDetails;
 
-    const {resellerId,pairId, offerPrice, note, validityHours} = payload;
+    const {pairId, quantity, variant, askingPrice,offerPrice, validityHours, note, dealCompletionType} = payload;
 
-    const newpair = await PairRequestModel.create({
-        resellerId,
+    const pair: any = await PairsModel.findById(pairId).lean();
+
+    if (!pair) {
+        throw new ApiError(404, "Pairs not found.");
+    }
+
+    if (pair.resellerId.toString() === profileId) {
+        throw new ApiError(400, "You cannot make a request for your own pairs.");
+    }
+
+    if (pair.quantity < quantity) {
+        throw new ApiError(400, "Requested quantity exceeds available quantity.");
+    }
+
+    const newPairRequest = new PairRequestModel({
+        resellerId: pair?.resellerId,
         retailerId: profileId,
         pairId,
-        note,
+        quantity,
+        variant,
+        askingPrice: pair?.askingPrice,
         offerHistory: [
             {
                 offeredBy: ENUM_USER_Type.RETAILER,
-                price: offerPrice || 0,
-                // note: payload.note || ""
+                price: offerPrice,
+                // note: note || ""
             }
         ],
+        status: ENUM_PAIR_REQUEST_STATUS.PENDING,
+        note,
         validity: {
             validForHours: validityHours,
             from: new Date(),
             to: new Date(Date.now() + validityHours * 60 * 60 * 1000)
-        }
+        },
+        // dealCompletionType
     });
 
-    if(!newpair) {
-        throw new ApiError(500, "Failed to create pair request.");
-    }
+    await newPairRequest.save();
 
-    //send notification to reseller about new offer (implementation pending)
-    await notification.createNotification({
-        toId: resellerId,
-        toModel: "Reseller",
-        title: "New Offer Received",
-        description: `You have received a new offer for your pair listing. Offered Price: $${offerPrice}`,
-        type: ENUM_NOTIFICATION_TYPE.NEW_PAIR_REQUEST,
-        referenceId: newpair._id.toString(),
-        referenceModel: "PairRequest"
-    });
+    //send notification to the reseller about the new pair request (this can be implemented using a notification service or system)
 
-    return newpair;
-   
-}
+    return newPairRequest;
+
+};
 
 //dashboard
 
@@ -147,7 +155,7 @@ const approveResellerService = async (id: string) => {
 
 const ResellerServices = { 
     resellerHomePageStatDataService,
-    proposeAnOfferToResellerForPairRequest
+    makeRequestForPairService
 };
 
 

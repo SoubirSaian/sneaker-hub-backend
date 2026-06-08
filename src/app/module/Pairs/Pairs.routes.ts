@@ -10,8 +10,15 @@ const PairsRouter = express.Router();
 PairsRouter.post(
     "/add-new-pairs",
     authorizeUser,
-    // validateRequest(PairsValidations.addNewPairsZodSchema),
+    validateRequest(PairsValidations.addnewPairValidationSchema),
     PairsController.addNewPairsController
+);
+
+PairsRouter.patch(
+    "/edit-pairs/:id",
+    authorizeUser,
+    // validateRequest(PairsValidations.addnewPairValidationSchema),
+    PairsController.editPairsController
 );
 
 PairsRouter.get(
@@ -20,6 +27,13 @@ PairsRouter.get(
     // validateRequest(PairsValidations.addNewPairsZodSchema),
     PairsController.getAllListedPairsController
 );
+
+// PairsRouter.post(
+//     "/make-pair-request",
+//     authorizeUser,
+//     // validateRequest(PairsValidations.addNewPairsZodSchema),
+//     PairsController.makeRequestForPairController
+// );
 
 PairsRouter.post(
     "/get-pair-requests",

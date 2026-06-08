@@ -1,9 +1,10 @@
 import { model, Schema, models } from "mongoose";
 import { IPromotion } from "./Promotion.interface";
-import { ENUM_PROMOTION_RECEIVER_TYPE, ENUM_PROMOTION_SEND_METHOD, ENUM_PROMOTION_TYPE } from "../../../utilities/enum";
+import { ENUM_PROMOTION_RECEIVER_TYPE, ENUM_PROMOTION_SEND_METHOD, ENUM_PROMOTION_STATUS, ENUM_PROMOTION_TYPE } from "../../../utilities/enum";
+
 
 const PromotionSchema = new Schema<IPromotion>({
-    retaileriD: { type: Schema.Types.ObjectId, required: true, ref: "User" },
+    retailerID: { type: Schema.Types.ObjectId, required: true, ref: "User" },
     type: { 
         type: String, required: true, 
         enum: Object.values(ENUM_PROMOTION_TYPE), 
@@ -11,7 +12,7 @@ const PromotionSchema = new Schema<IPromotion>({
     },
     title: { type: String, required: true },
     content: { type: String, required: true },
-    receiver: { 
+    recepient: { 
         type: String, 
         required: true, 
         enum: Object.values(ENUM_PROMOTION_RECEIVER_TYPE),
@@ -23,6 +24,13 @@ const PromotionSchema = new Schema<IPromotion>({
         enum: Object.values(ENUM_PROMOTION_SEND_METHOD), 
         default: ENUM_PROMOTION_SEND_METHOD.SEND_NOW
     },
+    status: {
+        type: String,
+        enum: Object.values(ENUM_PROMOTION_STATUS),
+        default: "draft"
+    },
+
+    scheduledAt: Date,
 }, { timestamps: true });
 
 const PromotionModel = models.Promotion || model<IPromotion>("Promotion", PromotionSchema);

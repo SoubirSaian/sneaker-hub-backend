@@ -8,51 +8,51 @@ import { ENUM_NOTIFICATION_TYPE } from "../../../utilities/enum";
 import { emitResult } from "../../../socket/emitResult";
 
 //send request
-// export const sendConversationRequest = async (
-//   senderId: string,
-//   receiverId: string
-// ) => {
+export const sendConversationRequest = async (
+  senderId: string,
+  receiverId: string
+) => {
 
-//   const existing = await ConversationModel.findOne({
-//     participants: { $all: [senderId, receiverId] }
-//   });
+  const existing = await ConversationModel.findOne({
+    participants: { $all: [senderId, receiverId] }
+  });
 
-//   if (existing) return existing;
+  if (existing) return existing;
 
-//   const conversation = await ConversationModel.create({
-//     participants: [senderId, receiverId],
-//     status: "Pending"
-//   });
+  const conversation = await ConversationModel.create({
+    participants: [senderId, receiverId],
+    status: "Accepted"
+  });
 
-//   const io = getIO();
+  const io = getIO();
 
-//   //send response to receiver
-//   io.to(receiverId).emit("new_conversation_request", emitResult({
-//         statusCode: 201,
-//         success: true,
-//         message: `You have received a new conversation request`,
-//         data: conversation,
-//       }));
-//   //send response to
-//   io.to(senderId).emit("new_conversation_request", emitResult({
-//         statusCode: 201,
-//         success: true,
-//         message: `You have requested for a new conversation .`,
-//         data: conversation,
-//       }));
+  //send response to receiver
+  io.to(receiverId).emit("new_conversation_request", emitResult({
+        statusCode: 201,
+        success: true,
+        message: `You have received a new conversation request`,
+        data: conversation,
+      }));
+  //send response to
+  io.to(senderId).emit("new_conversation_request", emitResult({
+        statusCode: 201,
+        success: true,
+        message: `You have requested for a new conversation .`,
+        data: conversation,
+      }));
 
-//   //send a notification
-//   await notification.createNotification({
-//       toId: receiverId as string,
-//       toModel: "User",
-//       title: `An user sent you a conversation request.`,
-//       type: ENUM_NOTIFICATION_TYPE.SENT_WAVE,
-//       referenceId: conversation?._id,
-//       referenceModel: "Conversation"
-//   });
+  //send a notification
+  // await notification.createNotification({
+  //     toId: receiverId as string,
+  //     toModel: "User",
+  //     title: `An user sent you a conversation request.`,
+  //     type: ENUM_NOTIFICATION_TYPE.SENT_WAVE,
+  //     referenceId: conversation?._id,
+  //     referenceModel: "Conversation"
+  // });
 
-//   return conversation;
-// };
+  return conversation;
+};
 
 //get all request
 // export const getConversationRequests = async (userId: string) => {
@@ -118,76 +118,77 @@ import { emitResult } from "../../../socket/emitResult";
 // };
 
 //get chatlist
-// export const getChatList = async (userId: string) => {
-//     try {
+export const getChatList = async (userId: string) => {
+    try {
         
-//         const chats = await ConversationModel.aggregate([
-//           {
-//             $match: {
-//               participants: new mongoose.Types.ObjectId(userId),
-//             },
-//           },
-//           {
-//             $lookup: {
-//               from: "users",
-//               localField: "participants",
-//               foreignField: "_id",
-//               as: "users",
-//             },
-//           },
-//           {
-//             $lookup: {
-//               from: "messages",
-//               localField: "lastMessage",
-//               foreignField: "_id",
-//               as: "lastMessage",
-//             },
-//           },
-//           {
-//             $unwind: {
-//               path: "$lastMessage",
-//               preserveNullAndEmptyArrays: true,
-//             },
-//           },
-//           {
-//             $addFields: {
-//               otherUser: {
-//                 $filter: {
-//                   input: "$users",
-//                   as: "user",
-//                   cond: {
-//                     $ne: ["$$user._id", new mongoose.Types.ObjectId(userId)],
-//                   },
-//                 },
-//               },
-//             },
-//           },
-//           {
-//             $unwind: "$otherUser",
-//           },
-//           {
-//             $sort: {
-//               updatedAt: -1,
-//             },
-//           },
-//           {
-//             $project: {
-//               _id: 1,
-//               "otherUser.name": 1,
-//               "otherUser.image": 1,
-//               lastMessage: "$lastMessage.text",
-//               time: "$lastMessage.createdAt",
-//             },
-//           },
-//         ]);
+        const chats = await ConversationModel.aggregate([
+          {
+            $match: {
+              participants: new mongoose.Types.ObjectId(userId),
+            },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "participants",
+              foreignField: "_id",
+              as: "users",
+            },
+          },
+          {
+            $lookup: {
+              from: "messages",
+              localField: "lastMessage",
+              foreignField: "_id",
+              as: "lastMessage",
+            },
+          },
+          {
+            $unwind: {
+              path: "$lastMessage",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $addFields: {
+              otherUser: {
+                $filter: {
+                  input: "$users",
+                  as: "user",
+                  cond: {
+                    $ne: ["$$user._id", new mongoose.Types.ObjectId(userId)],
+                  },
+                },
+              },
+            },
+          },
+          {
+            $unwind: "$otherUser",
+          },
+          {
+            $sort: {
+              updatedAt: -1,
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              "otherUser.name": 1,
+              "otherUser.image": 1,
+              lastMessage: "$lastMessage.text",
+              time: "$lastMessage.createdAt",
+            },
+          },
+        ]);
       
-//         return chats;
-//     } catch (error) {
-//         console.log(error);
-//         throw new ApiError(500,"Error in get chat lis.");
-//     }
+        return chats;
+        
+    } catch (error) {
+        console.log(error);
+        throw new ApiError(500,"Error in get chat lis.");
+    }
 
-// };
+};
 
 //get all message from user
 export const getMessages = async (conversationId: string) => {

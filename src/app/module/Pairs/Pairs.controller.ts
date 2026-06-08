@@ -17,6 +17,20 @@ const addNewPairsController = catchAsync(async (req, res) => {
     });
 });
 
+const editPairsController = catchAsync(async (req, res) => {
+
+    const { user } = req as AuthRequest;
+
+    const result = await PairsServices.editPairsDetails(user, req.params.id, req.body);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Pairs updated successfully.",
+        data: result,
+    });
+});
+
 const getAllListedPairsController = catchAsync(async (req, res) => {
 
     const { user } = req as AuthRequest;
@@ -30,6 +44,20 @@ const getAllListedPairsController = catchAsync(async (req, res) => {
         data: result,
     });
 });
+
+// const makeRequestForPairController = catchAsync(async (req, res) => {
+
+//     const { user } = req as AuthRequest;
+
+//     const result = await PairsServices.makeRequestForPairService(user, req.body);
+
+//     sendResponse(res, {
+//         statusCode: 201,
+//         success: true,
+//         message: "Pair request submitted successfully.",
+//         data: result,
+//     });
+// });
 
 const getAllpairRequestController = catchAsync(async (req, res) => {
 
@@ -89,7 +117,9 @@ const proposeCounterOfferToPairRequestController = catchAsync(async (req, res) =
 
 const PairsController = { 
     addNewPairsController,
+    editPairsController,
     getAllListedPairsController,
+    // makeRequestForPairController,
     getAllpairRequestController,
     acceptPairRequestController,
     rejectPairRequestController,

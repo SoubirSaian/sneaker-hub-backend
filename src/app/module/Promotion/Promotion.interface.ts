@@ -1,12 +1,14 @@
 import { Types } from "mongoose";
 
 export interface IPromotion {
-    retaileriD: Types.ObjectId;
+    retailerID: Types.ObjectId;
     type: string;
-    username?: string;
+    // username?: string;
     title: string;
     content: string;
-    receiver: string;
+    recepient: string;
     sendMethod: string;
+    status: string;
+    scheduledAt?: Date;
     createdAt: Date;
 }

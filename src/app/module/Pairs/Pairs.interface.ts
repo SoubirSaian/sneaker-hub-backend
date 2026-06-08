@@ -33,7 +33,7 @@ export interface IPairRequest {
     retailerId: Types.ObjectId;
     pairId: Types.ObjectId;
     quantity: number;
-    variant: {
+    variant?: {
         gender: string;
         size: number;
     };

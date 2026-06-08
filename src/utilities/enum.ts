@@ -122,6 +122,14 @@ export const ENUM_PROMOTION_SEND_METHOD = {
     SAVE_DRAFT : "Save Draft",
 }
 
+export const ENUM_PROMOTION_STATUS = {
+    DRAFT : "Draft",
+    SCHEDULED : "Scheduled",
+    SENDING : "Sending",
+    SENT : "Sent",
+    FAILED : "Failed",
+}
+
 export const ENUM_PAIR_REQUEST_STATUS = {
     ACCEPTED : "Accepted",
     REJECTED : "Rejected",

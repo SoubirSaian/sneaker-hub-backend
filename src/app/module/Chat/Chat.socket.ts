@@ -47,15 +47,15 @@ export const registerSocketHandlers = (socket: Socket) => {
   });
 
   // // GET CHAT LIST
-  // socket.on("get_chat_list", async (data) => {
+  socket.on("get_chat_list", async (data) => {
 
-  //   const { userId } = data;
+    const { userId } = data;
 
-  //   const chats = await ChatService.getChatList(userId);
+    const chats = await ChatService.getChatList(userId);
 
-  //   socket.emit("chat_list", chats);
+    socket.emit("chat_list", chats);
 
-  // });
+  });
 
   // GET MESSAGES
   socket.on("get_messages", async (data) => {
@@ -83,19 +83,19 @@ export const registerSocketHandlers = (socket: Socket) => {
   // });
 
   //send conversation request
-  // socket.on("send_conversation_request", async (data) => {
+  socket.on("send_conversation_request", async (data) => {
 
-  //   const { receiverId } = data;
-  //   const senderId = socket.data.user.profileId
+    const { receiverId } = data;
+    const senderId = socket.data.user.profileId
 
-  //   const conversation = await ChatService.sendConversationRequest(
-  //     senderId,
-  //     receiverId
-  //   );
+    const conversation = await ChatService.sendConversationRequest(
+      senderId,
+      receiverId
+    );
 
-  //   // console.log(conversation);
+    // console.log(conversation);
 
-  // });
+  });
 
   //get all conversation
   // socket.on("get_conversation_requests", async () => {
