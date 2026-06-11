@@ -40,6 +40,7 @@ export interface IBuyer {
   subscription: Types.ObjectId;
   subscriptionStartDate: Date;
   subscriptionEndDate: Date;
+  discoveryRadius: number;
   createdAT: Date;
 }
 

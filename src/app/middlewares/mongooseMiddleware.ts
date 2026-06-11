@@ -4,7 +4,7 @@ import { ENUM_PRODUCT_AVAILABILITY } from "../../utilities/enum";
 
 const LOW_STOCK_THRESHOLD = 3;
 
-export function getAvailability(variants: { size: number; stock: number }[]) {
+export function getAvailability(variants: { size: string; stock: number }[]) {
     const totalStock = variants.reduce(
         (sum, variant) => sum + variant.stock,
         0

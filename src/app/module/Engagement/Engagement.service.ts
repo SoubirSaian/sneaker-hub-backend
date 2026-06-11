@@ -197,6 +197,30 @@ const removeFromWishlistService = async (wishListId: string) => {
 
 }
 
+//get buyer wishlist data
+const getBuyerWishList = async (userDetails: IJwtPayload) => {
+    const {profileId} = userDetails;
+
+    const wishListProduct = await WishListModel.find({buyerId: profileId, isWanted: false})
+        .populate({path:"productId", select: "name images"})
+        .sort({createdAt: -1})
+            .lean();
+
+    return wishListProduct;
+}
+
+//get buyer wishlist data
+const getBuyerWantedList = async (userDetails: IJwtPayload) => {
+    const {profileId} = userDetails;
+
+    const wishListProduct = await WishListModel.find({buyerId: profileId, isWanted: true})
+        .populate({path:"productId", select: "name images"})
+        .sort({createdAt: -1})
+            .lean();
+
+    return wishListProduct;
+}
+
 const EngagementServices = { 
     followRetailerService, 
     unfollowRetailerService ,

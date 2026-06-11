@@ -15,6 +15,18 @@ const filterNearbyRetailersController = catchAsync(async (req, res) => {
     });
 });
 
+const getAllNearbyRetailerForMap = catchAsync(async (req, res) => {
+
+    const result = await RetailerServices.getAllNearbyRetailersForMap(req.query);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Nearby retailers for map retrieved successfully.",
+        data: result,
+    });
+});
+
 const getRetailerInventoryController = catchAsync(async (req, res) => {
     const { user } = req as AuthRequest;
 
@@ -58,6 +70,7 @@ const toggleRetailerOperationHourController = catchAsync(async (req, res) => {
 
 const RetailerController = { 
     filterNearbyRetailersController,
+    getAllNearbyRetailerForMap,
     getRetailerInventoryController,
     getRetailerAllOrdersController,
     toggleRetailerOperationHourController

@@ -80,10 +80,10 @@ const registerUserService = async (payload: TRegisterUser) => {
                     auth: createdUser._id,
                     email: email.toLowerCase(),
                     name,
-                    shoeSize,
-                    location: {
-                        coordinates: [Number(longitude), Number(latitude)]
-                    }
+                    // shoeSize,
+                    // location: {
+                    //     coordinates: [Number(longitude), Number(latitude)]
+                    // }
                 },
             ],
             { session }

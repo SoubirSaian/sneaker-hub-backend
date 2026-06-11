@@ -35,9 +35,9 @@ export const addDesireMood = z.object({
 
 const changePasswordValidation = z.object({
     body: z.object({
-        currentPassword: z.string().min(4,'Old password must be at least 4 characters'),
-        newPassword: z.string().min(4, 'New password must be at least 4 characters'),
-        confirmPassword: z.string().min(4, 'Confirm password must be at least 4 characters'),
+        currentPassword: z.string().min(6,'Old password must be at least 4 characters'),
+        newPassword: z.string().min(6, 'New password must be at least 4 characters'),
+        confirmPassword: z.string().min(6, 'Confirm password must be at least 4 characters'),
         
       })
       // validate that password === confirmPassword

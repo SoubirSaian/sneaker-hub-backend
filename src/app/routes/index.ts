@@ -5,6 +5,7 @@ import BuyerRouter from "../module/Buyer/Buyer.routes";
 import RetailerRouter from "../module/Retailer/Retailer.routes";
 import EngagementRouter from "../module/Engagement/Engagement.routes";
 import ResellerRouter from "../module/Reseller/Reseller.routes";
+import ProductRouter from "../module/Product/Product.routes";
 
 
 const allRouter = Router();
@@ -34,6 +35,10 @@ const moduleRoutes = [
     {
         path: '/reseller',
         router: ResellerRouter,
+    },
+    {
+        path: '/product',
+        router: ProductRouter,
     },
   
 ];

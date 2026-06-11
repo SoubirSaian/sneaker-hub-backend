@@ -169,6 +169,10 @@ const acceptPairRequest = async (userDetails: IJwtPayload, pairRequestId: string
     pairRequest.status = ENUM_PAIR_REQUEST_STATUS.ACCEPTED;
     await pairRequest.save();
 
+    //adjust the quantity of the pairs based on the accepted request
+
+    //send notification to the retailer about the acceptance of their pair request (this can be implemented using a notification service or system)
+
     return null;
 };
 

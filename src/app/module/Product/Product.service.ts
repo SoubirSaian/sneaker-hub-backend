@@ -96,15 +96,14 @@ const deleteProductService = async (userDetails: IJwtPayload, productId: string)
 
 const searchProductsService = async (userDetails: IJwtPayload, query: Record<string,unknown>) => {
     const {profileId} = userDetails;
-    const {searchtext} = query;
+    const {searchtext,type} = query;
 
     /*
      |--------------------------------------------------------------------------
      | 2. SEARCH PRODUCTS
      |--------------------------------------------------------------------------
      */
-
-    const products = await ProductModel.find({
+    let filter: Record<string, unknown> = {
       $or: [
         {
           name: {
@@ -119,7 +118,13 @@ const searchProductsService = async (userDetails: IJwtPayload, query: Record<str
           },
         },
       ],
-    })
+    };
+
+     if(type){
+        filter.type = type;
+     }
+
+    const products = await ProductModel.find(filter)
       .select("_id name brand price image totalSearchCount")
       .limit(10)
       .lean();

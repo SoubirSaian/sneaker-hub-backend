@@ -6,7 +6,7 @@ const CartSchema = new Schema<ICart>({
    buyerId: { type: Schema.Types.ObjectId, ref: "Buyer", required: true },
    productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
    retailerId: { type: Schema.Types.ObjectId, ref: "Retailer", required: true },
-//    unitPrice: { type: Number, required: true },
+   unitPrice: { type: Number, required: true },
    quantity: { type: Number, required: true },
    totalPrice: { type: Number, required: true },
    selectedSize: { type: Number, required: true },

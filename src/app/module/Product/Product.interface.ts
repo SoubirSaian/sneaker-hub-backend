@@ -11,7 +11,7 @@ export interface IProduct {
     color: string;
     styleCode: string;
     variant: {
-        size: number,
+        size: string,
         stock: number
     }[];
     availability: string;

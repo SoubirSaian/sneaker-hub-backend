@@ -8,47 +8,47 @@ import { IJwtPayload } from "../../../interface/jwt.interface";
 import { email } from "zod";
 import AuthModel from "../auth/auth.model";
 import BuyerModel from "../Buyer/Buyer.model";
+import { IBuyer } from "../Buyer/Buyer.interface";
 
 
 
-const updateUserProfile = async (userDetails: IJwtPayload,file: Express.Multer.File | undefined,payload: Partial<IUser>) => {
+const updateUserProfile = async (
+    userDetails: IJwtPayload,
+    file: Express.Multer.File | undefined,
+    payload: any
+) => {
   const { profileId } = userDetails;
 
   // Fetch user and profile in parallel
-  const user = await UserModel.findById(profileId);
+  const user = await BuyerModel.findById(profileId);
    
 
   if (!user ) {
     throw new ApiError(404, "Profile not found to update.");
   }
 
-  // Update fields
-  const { name } = payload;
-
-  if (name) {
-    user.name = name;
-  }
-
-//   if (phone) {
-//     user.phone = phone;
-//   }
 
   // Handle image update
   if (file) {
 
     if (user.image) deleteOldFile(user.image as string);
 
-    user.image = `uploads/profile-image/${file.filename}`;
+    // user.image = `uploads/profile-image/${file.filename}`;
+
+    payload.image = `uploads/profile-image/${file.filename}`;
+
+    // await user.save();
+
   }
 
   // Save both
-  await user.save();
 
-  // Return a unified response
-  return {
-      name: user.name,
-      email: user.email,
-  };
+  const updatedUser = await BuyerModel.findByIdAndUpdate(
+    profileId,
+    ...payload
+  );
+
+  return updatedUser;
 };
 
 const getMyProfile = async (userDetails: JwtPayload) => {

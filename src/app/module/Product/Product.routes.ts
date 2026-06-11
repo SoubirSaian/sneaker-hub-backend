@@ -16,7 +16,7 @@ ProductRouter.post(
 );
 
 ProductRouter.get(
-    "/search",
+    "/search-product",
     authorizeUser,
     // validateRequest(ProductValidations.searchProductsZodSchema, "query"),
     ProductController.searchProductsController

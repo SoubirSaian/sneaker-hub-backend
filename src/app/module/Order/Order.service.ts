@@ -284,6 +284,22 @@ const buyNowService = async (
     }
 };
 
+//get buyer all order
+const getBuyerAllOrder = async (userDetails: IJwtPayload, query: Record<string,unknown>) => {
+
+    const {profileId} = query;
+
+    const {orderStatus} = query;
+
+    const allOrder = await OrderItemModel.find({
+        buyerId: profileId,
+        status: orderStatus
+    }).lean();
+
+    return allOrder;
+
+}
+
 
 const OrderServices = { 
     placeNewOrderService,

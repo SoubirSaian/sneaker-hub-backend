@@ -1,86 +1,239 @@
+import mongoose from "mongoose";
 import ApiError from "../../../error/ApiError";
 import { IJwtPayload } from "../../../interface/jwt.interface";
-import { ENUM_CART_STATUS } from "../../../utilities/enum";
+import { ENUM_CART_STATUS, ENUM_PRODUCT_AVAILABILITY, ENUM_PAYMENT_METHOD, ENUM_ORDER_ITEM_STATUS, ENUM_ORDER_STATUS, ENUM_ORDER_TYPE, ENUM_PAYMENT_STATUS } from "../../../utilities/enum";
 import {ProductModel} from "../Product/Product.model";
 import { ICart, TCartItem } from "./Cart.interface";
 import CartModel from "./Cart.model";
+import { profile } from "console";
+import { OrderItemModel, OrderModel } from "../Order/Order.model";
 
 const addToCartService = async (userDetails: IJwtPayload, payload: TCartItem) => {
 
     const { profileId } = userDetails;
 
-    const { retailerId, productId, quantity, unitPrice, selectedSize } = payload;
+    const { productId, quantity, unitPrice, selectedSize } = payload;
 
-    // Check if the product is already in the cart
-    const existingCartItem = await CartModel.findOne({ buyerId: profileId, retailerId, productId });
-
-    if (existingCartItem) {
-        throw new ApiError(400, "This product is already in your cart.");
+    if (!quantity || quantity < 1) {
+        throw new Error("Quantity must be at least 1");
     }
 
-    // Fetch product details to get unit price and available sizes
-    // Assuming you have a ProductModel to fetch product details
-    // const productDetails = await ProductModel.findById(productId);
+    const product:any = await ProductModel.findById(productId).lean();
 
-    // if (!productDetails) {
-    //     throw new ApiError(404, "Product not found.");
+    if (!product) {
+        throw new Error("Product not found to add to cart");
+    }
+
+    // if (product.availability !== ENUM_PRODUCT_AVAILABILITY.ACTIVE ) {
+    //     throw new Error("Product is not active");
     // }
 
-    // const unitPrice = productDetails.price; // Assuming price is a field in product details
-    // const selectedSize = payload.selectedSize; // Assuming selected size is passed in payload
-    const totalPrice = unitPrice * quantity;
+    const sizeInfo = product.variant?.find(
+        (item: any) => item.size === selectedSize
+    );
 
-    // Create a new cart item
-    const newCartItem = await CartModel.create({
+    if (!sizeInfo) {
+        throw new Error("Selected size is not available");
+    }
+
+    // const availableStock = sizeInfo.stock - (sizeInfo.reservedStock || 0);
+    const availableStock = sizeInfo.stock;
+
+    const existingCartItem = await CartModel.findOne({
         buyerId: profileId,
-        retailerId,
         productId,
-        // unitPrice,
-        quantity,
-        totalPrice,
         selectedSize,
+        status: ENUM_CART_STATUS.ACTIVE,
     });
 
-    if(!newCartItem){
-        throw new ApiError(500, "Failed to add product to cart.");
-    }
+    // const finalQuantity = existingCartItem
+    //     ? existingCartItem.quantity + quantity
+    //     : quantity;
+
+    // if (availableStock < finalQuantity) {
+    //     throw new Error(`Only ${availableStock} items are available for this size`);
+    // }
+
+    // const unitPrice = product.price;
+    const totalPrice = unitPrice * quantity;
+
+    let cartItem;
+
+    // if (existingCartItem) {
+    //     existingCartItem.quantity = finalQuantity;
+    //     existingCartItem.unitPrice = unitPrice;
+    //     existingCartItem.totalPrice = totalPrice;
+
+    //     cartItem = await existingCartItem.save();
+    // } else {
+        cartItem = await CartModel.create({
+        buyerId: profileId,
+        productId,
+        retailerId: product.retailerId,
+        selectedSize,
+        quantity,
+        unitPrice,
+        totalPrice: unitPrice * quantity,
+        status: ENUM_CART_STATUS.ACTIVE,
+        });
+    // }
+
+    return cartItem;
+
+    // // Check if the product is already in the cart
+    // const existingCartItem = await CartModel.findOne({ buyerId: profileId, retailerId, productId });
+
+    // if (existingCartItem) {
+    //     throw new ApiError(400, "This product is already in your cart.");
+    // }
+
+    // // Fetch product details to get unit price and available sizes
+    // // Assuming you have a ProductModel to fetch product details
+    // // const productDetails = await ProductModel.findById(productId);
+
+    // // if (!productDetails) {
+    // //     throw new ApiError(404, "Product not found.");
+    // // }
+
+    // // const unitPrice = productDetails.price; // Assuming price is a field in product details
+    // // const selectedSize = payload.selectedSize; // Assuming selected size is passed in payload
+    // const totalPrice = unitPrice * quantity;
+
+    // // Create a new cart item
+    // const newCartItem = await CartModel.create({
+    //     buyerId: profileId,
+    //     retailerId,
+    //     productId,
+    //     // unitPrice,
+    //     quantity,
+    //     totalPrice,
+    //     selectedSize,
+    // });
+
+    // if(!newCartItem){
+    //     throw new ApiError(500, "Failed to add product to cart.");
+    // }
     
     return null;
 
 };
 
+const getMyCartService = async (buyerId: string) => {
+  const cartItems = await CartModel.find({
+    buyerId,
+    status: ENUM_CART_STATUS.ACTIVE,
+  })
+    .populate({path:"productId", select:"name price images brand color styleCode variant"})
+    .populate({path:"retailerId", select:"name"})
+    .sort({ createdAt: -1 });
+
+  const subtotal = cartItems.reduce((sum, item) => {
+    return sum + item.totalPrice;
+  }, 0);
+
+  const totalItems = cartItems.reduce((sum, item) => {
+    return sum + item.quantity;
+  }, 0);
+
+  return {
+    cartItems,
+    summary: {
+      subtotal,
+      totalItems,
+    },
+  };
+};
+
 const deleteCartItemService = async (userDetails: IJwtPayload, cartItemId: string) => {
-
+    
     const { profileId } = userDetails;
-
-    const cartItem = await CartModel.findOne({ _id: cartItemId, buyerId: profileId });
-
-    if (!cartItem) {
-        throw new ApiError(404, "Cart item not found.");
+    
+    // const cartItem = await CartModel.findOne({ _id: cartItemId, buyerId: profileId });
+    
+    // if (!cartItem) {
+        //     throw new ApiError(404, "Cart item not found.");
+        // }
+        
+        // await CartModel.deleteOne({ _id: cartItemId });
+        
+    //instead of deleting the cart item, we can just update the status to "Removed" so that we can keep the record for future reference and analytics
+     const cartItem = await CartModel.findOneAndUpdate(
+    {
+      _id: cartItemId,
+      buyerId: profileId,
+      status: ENUM_CART_STATUS.ACTIVE,
+    },
+    {
+      status: ENUM_CART_STATUS.REMOVED,
+    },
+    {
+      new: true,
     }
+  );
 
-    await CartModel.deleteOne({ _id: cartItemId });
 
     return null;
 
 };
 
-const increaseCartItemQuantityService = async (userDetails: IJwtPayload, cartItemId: string) => {
+const increaseCartItemQuantityService = async (userDetails: IJwtPayload, payload: { cartItemId: string, quantity: number }) => {
 
     const { profileId } = userDetails;
+    const { cartItemId, quantity } = payload;
+    // const cartItem = await CartModel.findOne({ _id: cartItemId, buyerId: profileId });
 
-    const cartItem = await CartModel.findOne({ _id: cartItemId, buyerId: profileId });
+    // if (!cartItem) {
+    //     throw new ApiError(404, "Cart item not found to increase quantity.");
+    // }
 
-    if (!cartItem) {
-        throw new ApiError(404, "Cart item not found to increase quantity.");
+    // cartItem.quantity += 1;
+    // cartItem.totalPrice = cartItem.unitPrice * cartItem.quantity;
+
+    // await cartItem.save();
+
+    // return null;
+
+    if (!quantity || quantity < 1) {
+        throw new Error("Quantity must be at least 1");
     }
 
-    cartItem.quantity += 1;
-    cartItem.totalPrice = cartItem.unitPrice * cartItem.quantity;
+    const cartItem = await CartModel.findOne({
+        _id: cartItemId,
+        buyerId:profileId,
+        status: ENUM_CART_STATUS.ACTIVE,
+    });
+
+    if (!cartItem) {
+        throw new Error("Cart item not found");
+    }
+
+    const product = await ProductModel.findById(cartItem.productId);
+
+    if (!product) {
+        throw new Error("Product not found");
+    }
+
+    const sizeInfo = product.sizes?.find(
+        (item: any) => item.size === cartItem.selectedSize
+    );
+
+    if (!sizeInfo) {
+        throw new Error("Selected size is no longer available");
+    }
+
+    const availableStock = sizeInfo.stock - (sizeInfo.reservedStock || 0);
+
+    if (availableStock < quantity) {
+        throw new Error(`Only ${availableStock} items are available`);
+    }
+
+    cartItem.quantity = quantity;
+    cartItem.unitPrice = product.price;
+    cartItem.totalPrice = product.price * quantity;
 
     await cartItem.save();
 
-    return null;
+    return cartItem;
 
 };
 
@@ -133,6 +286,336 @@ const placeOrderFromCartService = async (userDetails: IJwtPayload,payload: {tota
     return null;
 
 }
+
+
+type TShippingAddress = {
+  name: string;
+  phone: string;
+  address: string;
+  city: string;
+  area?: string;
+  lat: number;
+  lng: number;
+};
+
+type TCheckoutCartPayload = {
+//   buyerId: string;
+  shippingAddress: TShippingAddress;
+  pickupTime: Date;
+  paymentMethod: string;
+};
+
+const calculateShippingCharge = ({
+  subtotal,
+  shippingAddress,
+}: {
+  subtotal: number;
+  shippingAddress: any;
+}) => {
+  if (subtotal >= 5000) {
+    return 0;
+  }
+
+  if (shippingAddress.city === "Dhaka") {
+    return 80;
+  }
+
+  return 150;
+};
+
+export const generateOrderNumber = () => {
+  const timestamp = Date.now();
+  const random = Math.floor(1000 + Math.random() * 9000);
+
+  return `ORD-${timestamp}-${random}`;
+};
+
+const checkoutAllCartItemsService = async (userDetails: IJwtPayload, payload: TCheckoutCartPayload) => {
+
+    const {profileId} = userDetails;
+
+    const { shippingAddress, pickupTime, paymentMethod } = payload;
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const cartItems = await CartModel.find({
+      buyerId: profileId,
+      status: ENUM_CART_STATUS.ACTIVE,
+    }).session(session);
+
+    if (!cartItems.length) {
+      throw new ApiError(400, "Cart is empty. Cannot proceed to checkout.");
+    }
+
+    let subtotal = 0;
+    let totalItems = 0;
+
+    const orderItemsPayload = [];
+
+    for (const cartItem of cartItems) {
+      const product = await ProductModel.findById(cartItem.productId).session(session);
+
+      if (!product) {
+        throw new ApiError(400, "One or more products are no longer available");
+      }
+
+    //   if (!product.isActive) {
+    //     throw new ApiError(400, `${product.name} is no longer active`);
+    //   }
+
+      const sizeInfo = product.variant?.find(
+        (item: any) => item.size === cartItem.selectedSize
+      );
+
+      if (!sizeInfo) {
+        throw new ApiError(400, `${product.name} selected size is no longer available`);
+      }
+
+    //   const availableStock = sizeInfo.stock - (sizeInfo.reservedStock || 0);
+         const availableStock = sizeInfo.stock;
+
+      if (availableStock < cartItem.quantity) {
+        throw new ApiError(400, `Only ${availableStock} items available for ${product.name}, size ${cartItem.selectedSize}`);
+      }
+
+      const unitPrice = product.price;
+      const totalPrice = unitPrice * cartItem.quantity;
+
+      subtotal += totalPrice;
+      totalItems += cartItem.quantity;
+
+      orderItemsPayload.push({
+        buyerId:profileId,
+        retailerId: cartItem.retailerId,
+        productId: product._id,
+        productSnapshot: {
+          name: product.name,
+          image: product.images?.[0] || product.image,
+          brand: product.brand,
+        },
+        selectedSize: cartItem.selectedSize,
+        quantity: cartItem.quantity,
+        unitPrice,
+        totalPrice,
+        pickupTime,
+        status: ENUM_ORDER_ITEM_STATUS.PLACED,
+      });
+
+      /**
+       * Reserve stock during checkout.
+       * This prevents another buyer from purchasing the same stock
+       * while payment is pending.
+       */
+      const updatedProduct = await ProductModel.findOneAndUpdate(
+        {
+          _id: product._id,
+          "variant.size": cartItem.selectedSize,
+          $expr: {
+            $gte: [
+              {
+                $subtract: [
+                  {
+                    $getField: {
+                      field: "stock",
+                      input: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: "$sizes",
+                              as: "s",
+                              cond: {
+                                $eq: ["$$s.size", cartItem.selectedSize],
+                              },
+                            },
+                          },
+                          0,
+                        ],
+                      },
+                    },
+                  },
+                  {
+                    $ifNull: [
+                      {
+                        $getField: {
+                          field: "reservedStock",
+                          input: {
+                            $arrayElemAt: [
+                              {
+                                $filter: {
+                                  input: "$sizes",
+                                  as: "s",
+                                  cond: {
+                                    $eq: ["$$s.size", cartItem.selectedSize],
+                                  },
+                                },
+                              },
+                              0,
+                            ],
+                          },
+                        },
+                      },
+                      0,
+                    ],
+                  },
+                ],
+              },
+              cartItem.quantity,
+            ],
+          },
+        },
+        {
+          $inc: {
+            "sizes.$.reservedStock": cartItem.quantity,
+          },
+        },
+        {
+          new: true,
+          session,
+        }
+      );
+
+      if (!updatedProduct) {
+        throw new Error(
+          `Stock changed while checking out ${product.name}. Please try again.`
+        );
+      }
+    }
+
+    const shippingCharge = calculateShippingCharge({
+      subtotal,
+      shippingAddress,
+    });
+
+    const discountAmount = 0;
+
+    const totalAmount = subtotal + shippingCharge - discountAmount;
+
+    const holdingTime = 15; // minutes
+    const holdingStartTime = new Date();
+    const holdingEndTime = new Date(
+      holdingStartTime.getTime() + holdingTime * 60 * 1000
+    );
+
+    const order = await OrderModel.create(
+      [
+        {
+          buyerId:profileId,
+          orderNumber: generateOrderNumber(),
+
+          subtotal,
+          shippingCharge,
+          discountAmount,
+          totalAmount,
+          totalItems,
+
+          orderStatus: ENUM_ORDER_STATUS.PLACED,
+          orderType: ENUM_ORDER_TYPE.BUY_NOW,
+          paymentStatus: ENUM_PAYMENT_STATUS.PENDING,
+          paymentMethod,
+
+          shippingAddress,
+
+          holdingTime,
+          holdingStartTime,
+          holdingEndTime,
+
+          pickupTime,
+        },
+      ],
+      { session }
+    );
+
+    const orderId = order[0]._id;
+
+    const finalOrderItemsPayload = orderItemsPayload.map((item) => ({
+      ...item,
+      orderId,
+    }));
+
+    await OrderItemModel.insertMany(finalOrderItemsPayload, { session });
+
+    await CartModel.updateMany(
+      {
+        buyerId: profileId,
+        status: ENUM_CART_STATUS.ACTIVE,
+        _id: {
+          $in: cartItems.map((item) => item._id),
+        },
+      },
+      {
+        status: ENUM_CART_STATUS.ORDERED,
+      },
+      { session }
+    );
+
+    await session.commitTransaction();
+
+    return {
+      order: order[0],
+      message: "Cart checkout created successfully. Continue payment.",
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+};
+
+
+const confirmCartOrderPaymentService = async (orderId: string) => {
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const order = await OrderModel.findById(orderId).session(session);
+
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    if (order.paymentStatus === ENUM_PAYMENT_STATUS.PAID) {
+      await session.commitTransaction();
+      return order;
+    }
+
+    const orderItems = await OrderItemModel.find({ orderId }).session(session);
+
+    for (const item of orderItems) {
+      await ProductModel.updateOne(
+        {
+          _id: item.productId,
+          "variant.size": item.selectedSize,
+        },
+        {
+          $inc: {
+            "variant.$.stock": -item.quantity,
+            "variant.$.reservedStock": -item.quantity,
+          },
+        },
+        { session }
+      );
+    }
+
+    order.paymentStatus = ENUM_PAYMENT_STATUS.PAID;
+    order.orderStatus = ENUM_ORDER_STATUS.PLACED;
+
+    await order.save({ session });
+
+    await session.commitTransaction();
+
+    return order;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+};
 
 const CartServices = { 
     addToCartService,

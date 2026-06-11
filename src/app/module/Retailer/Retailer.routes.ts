@@ -15,6 +15,12 @@ RetailerRouter.get(
 );
 
 RetailerRouter.get(
+    "/get-nearby-retailer-map",
+    validateRequest(RetailerValidations.validateLatLongTofilterNearbyRetailers),
+    RetailerController.getAllNearbyRetailerForMap
+);
+
+RetailerRouter.get(
     "/get-retailer-inventory",
     authorizeUser,
     RetailerController.getRetailerInventoryController

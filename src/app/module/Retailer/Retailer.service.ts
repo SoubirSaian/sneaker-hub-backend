@@ -1,10 +1,14 @@
+import mongoose from "mongoose";
 import ApiError from "../../../error/ApiError";
 import { IJwtPayload } from "../../../interface/jwt.interface";
+import { ENUM_PRODUCT_AVAILABILITY } from "../../../utilities/enum";
 import { OrderItemModel, OrderModel } from "../Order/Order.model";
 import { ProductModel } from "../Product/Product.model";
 import { IOperationHour, IRetailer } from "./Retailer.interface";
 import RetailerModel from "./Retailer.model";
+import { ReviewModel } from "../Engagement/Engagement.model";
 
+//get all nearby retailer for buyer 
 const filterNearbyRetailers = async (query: Record<string, unknown>) => {
     const { latitude, longitude} = query;
 
@@ -12,7 +16,7 @@ const filterNearbyRetailers = async (query: Record<string, unknown>) => {
         throw new ApiError(400, "Invalid query parameters. Latitude, longitude");
     }
 
-    const maxDistance = 5000; // Set a default max distance (in meters) for nearby retailers
+    const maxDistance = 10000; // Set a default max distance (in meters) for nearby retailers
 
     const nearbyRetailers = await RetailerModel.find({
         isApproved: true, // Only include approved retailers    
@@ -25,10 +29,257 @@ const filterNearbyRetailers = async (query: Record<string, unknown>) => {
                 $maxDistance: maxDistance,
             },
         },
-    });
+    }).select("name");
 
     return nearbyRetailers;
 };
+
+//map page
+
+const getAllNearbyRetailersForMap = async (query: Record<string, unknown>) => {
+    const { latitude, longitude } = query;
+
+    if (typeof latitude !== "number" || typeof longitude !== "number") {
+        throw new ApiError(
+            400,
+            "Invalid query parameters. Latitude, longitude"
+        );
+    }
+
+    const maxDistance = 10000;
+
+    const nearbyRetailers = await RetailerModel.aggregate([
+        {
+            $geoNear: {
+                near: {
+                    type: "Point",
+                    coordinates: [longitude, latitude],
+                },
+                distanceField: "distance",
+                maxDistance,
+                spherical: true,
+                query: {
+                    isApproved: true,
+                },
+            },
+        },
+
+        {
+            $lookup: {
+                from: "products",
+                let: {
+                    retailerId: "$_id",
+                },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    {
+                                        $eq: [
+                                            "$retailerId",
+                                            "$$retailerId",
+                                        ],
+                                    },
+                                    {
+                                        $eq: [
+                                            "$availability",
+                                            ENUM_PRODUCT_AVAILABILITY.ACTIVE,
+                                        ],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                    {
+                        $count: "total",
+                    },
+                ],
+                as: "productStats",
+            },
+        },
+
+        {
+            $addFields: {
+                productCount: {
+                    $ifNull: [
+                        {
+                            $arrayElemAt: [
+                                "$productStats.total",
+                                0,
+                            ],
+                        },
+                        0,
+                    ],
+                },
+            },
+        },
+
+        {
+            $project: {
+                productStats: 0,
+            },
+        },
+
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                // image: 1,
+                address: 1,
+                productCount: 1,
+                distance: 1,
+            },
+        },
+
+        {
+            $sort: {
+                distance: 1,
+            },
+        },
+    ]);
+
+    return nearbyRetailers;
+};
+
+const getRetailerDetailWithProduct = async (retailerId: string) => {
+
+    const retailerObjectId = new mongoose.Types.ObjectId(retailerId);
+
+    const retailer = await RetailerModel.findById(retailerId).lean();
+
+    const products = await ProductModel.find({
+        retailerId: retailerId,
+        availablity: ENUM_PRODUCT_AVAILABILITY.ACTIVE
+    }).lean();
+
+
+
+
+    const result = await ReviewModel.aggregate([
+    {
+        $match: {
+            retailerObjectId,
+        },
+    },
+
+    {
+        $facet: {
+        // Total review count
+        reviewSummary: [
+            {
+            $group: {
+                _id: null,
+                totalReviews: { $sum: 1 },
+
+                averageOverallRating: {
+                $avg: "$overallrating",
+                },
+
+                averageCustomerServiceRating: {
+                $avg: "$customerServiceRating",
+                },
+
+                averageAuthenticityRating: {
+                $avg: "$authenticityRating",
+                },
+
+                averagePickupSpeedRating: {
+                $avg: "$pickupSpeedRating",
+                },
+
+                averagePriceRating: {
+                $avg: "$priceRating",
+                },
+
+                averageStoreExperienceRating: {
+                $avg: "$storeExperienceRating",
+                },
+
+                averageStaffHelpfulnessRating: {
+                $avg: "$staffHelpfulnessRating",
+                },
+            },
+            },
+        ],
+
+        // Star-wise distribution
+        ratingDistribution: [
+            {
+            $group: {
+                _id: "$overallrating",
+                count: {
+                $sum: 1,
+                },
+            },
+            },
+            {
+            $sort: {
+                _id: -1,
+            },
+            },
+        ],
+        },
+    },
+    ]);
+
+    const summary = result[0]?.reviewSummary?.[0];
+
+    const distribution:any = {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+    };
+
+    result[0]?.ratingDistribution?.forEach((item:any) => {
+        distribution[item._id] = item.count;
+    });
+
+    const retailerReview: any = {
+
+
+        totalReviews: summary?.totalReviews ?? 0,
+
+        overallRating: Number(
+            (summary?.averageOverallRating ?? 0).toFixed(1)
+        ),
+
+        ratings: distribution,
+
+        customerServiceRating: Number(
+            (summary?.averageCustomerServiceRating ?? 0).toFixed(1)
+        ),
+
+        authenticityRating: Number(
+            (summary?.averageAuthenticityRating ?? 0).toFixed(1)
+        ),
+
+        pickupSpeedRating: Number(
+            (summary?.averagePickupSpeedRating ?? 0).toFixed(1)
+        ),
+
+        priceRating: Number(
+            (summary?.averagePriceRating ?? 0).toFixed(1)
+        ),
+
+        storeExperienceRating: Number(
+            (summary?.averageStoreExperienceRating ?? 0).toFixed(1)
+        ),
+
+        staffHelpfulnessRating: Number(
+            (summary?.averageStaffHelpfulnessRating ?? 0).toFixed(1)
+        ),
+    };
+
+    return {
+        retailer,
+        products,
+        retailerReview
+    }
+
+}
 
 //get inventory of a retailer
 const getRetailerInventory = async (userDetails: IJwtPayload,query: Record<string, unknown>) => {
@@ -189,6 +440,7 @@ const approveRetailerService = async (id: string) => {
 
 const RetailerServices = { 
     filterNearbyRetailers,
+    getAllNearbyRetailersForMap,
     getRetailerInventory,
     getAllOrdersOfRetailer,
     toggleOperationHour
