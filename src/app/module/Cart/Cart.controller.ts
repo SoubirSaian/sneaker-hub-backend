@@ -35,7 +35,7 @@ const increaseCartItemQuantityController = catchAsync(async (req, res) => {
 
     const { user } = req as AuthRequest;
 
-    const result = await CartServices.increaseCartItemQuantityService(user, req.params.id);
+    const result = await CartServices.increaseCartItemQuantityService(user,req.body);
 
     sendResponse(res, {
         statusCode: 200,

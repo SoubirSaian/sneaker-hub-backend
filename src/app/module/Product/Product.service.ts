@@ -92,6 +92,8 @@ const deleteProductService = async (userDetails: IJwtPayload, productId: string)
     return null;
 }
 
+
+
 // product-search.service.ts
 
 const searchProductsService = async (userDetails: IJwtPayload, query: Record<string,unknown>) => {

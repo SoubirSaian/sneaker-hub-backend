@@ -34,7 +34,7 @@ const filterNearbyRetailers = async (query: Record<string, unknown>) => {
     return nearbyRetailers;
 };
 
-//map page
+//buyer map page
 
 const getAllNearbyRetailersForMap = async (query: Record<string, unknown>) => {
     const { latitude, longitude } = query;
@@ -312,9 +312,7 @@ const getAllOrdersOfRetailer = async (userDetails: IJwtPayload, query: Record<st
     return orders;
 }
 
-const retailerChangeOrderStatusService = async (userDetails: IJwtPayload, payload: Record<string, unknown>) => {
-    const {profileId} = userDetails;
-}
+
 
 //update retailer operation hours
 const toggleOperationHour = async (userDetails: IJwtPayload, query: Record<string, unknown>) => {
@@ -353,6 +351,8 @@ const toggleOperationHour = async (userDetails: IJwtPayload, query: Record<strin
 
     return null;
 };
+
+//retailer home page
 
 
 

@@ -1,14 +1,16 @@
 import { z } from "zod";
 
         
-const u = z.object({
+const addNewProductValidation = z.object({
     body: z.object({
-        name: z.string().optional(),
-        phone: z.string().optional(),
-        address: z.string().optional(),
+        name: z.string().min(1,"Product name is required"),
+        type: z.enum(["Clothing","Sneakers"]),
+        
     }),
 });
 
-const ProductValidations = { u };
+const ProductValidations = { 
+    addNewProductValidation
+ };
 
 export default ProductValidations;

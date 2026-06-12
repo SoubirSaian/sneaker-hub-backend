@@ -8,7 +8,7 @@ import ResellerController from "./Reseller.controller";
 const ResellerRouter = express.Router();
 
 ResellerRouter.get(
-    "/get-reseller-home-page-stat-data",
+    "/reseller-homepage-stat-data",
     authorizeUser,
     ResellerController.resellerHomePageStatDataController
 );

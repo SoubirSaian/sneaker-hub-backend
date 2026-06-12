@@ -28,6 +28,13 @@ PairsRouter.get(
     PairsController.getAllListedPairsController
 );
 
+PairsRouter.get(
+    "/get-single-pair/:id",
+    // authorizeUser,
+    // validateRequest(PairsValidations.addNewPairsZodSchema),
+    PairsController.getSinglePairDetailsController
+);
+
 // PairsRouter.post(
 //     "/make-pair-request",
 //     authorizeUser,
@@ -40,6 +47,13 @@ PairsRouter.post(
     authorizeUser,
     // validateRequest(PairsValidations.addNewPairsZodSchema),
     PairsController.getAllpairRequestController
+);
+
+PairsRouter.post(
+    "/get-single-pair-request/:id",
+    // authorizeUser,
+    // validateRequest(PairsValidations.addNewPairsZodSchema),
+    PairsController.getSinglePairRequestDetails
 );
 
 PairsRouter.post(
