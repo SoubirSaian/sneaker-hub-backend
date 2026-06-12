@@ -73,13 +73,77 @@ const updateBuyerProfileController = catchAsync(async (req, res) => {
     });
 });
 
+
+//buyer home page
+
+const getNearbyProductsForBuyerController = catchAsync(async (req, res) => {
+
+    const { user } = req as AuthRequest;
+
+    const result = await BuyerServices.getNearbyProductsForBuyer(user,req.query);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Retrieved buyer nearby product.",
+        data: result,
+    });
+});
+
+const getBuyerFollowedBrandsProductsController = catchAsync(async (req, res) => {
+
+    const { user } = req as AuthRequest;
+
+    const result = await BuyerServices.getBuyerFollowedBrandsProducts(user);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Retrieved buyer followed brand product.",
+        data: result,
+    });
+});
+
+const getBuyerFollowedRetailersProductsController = catchAsync(async (req, res) => {
+
+    const { user } = req as AuthRequest;
+
+    const result = await BuyerServices.getBuyerFollowedRetailersProducts(user);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Retrieved buyer followed retailer product.",
+        data: result,
+    });
+});
+
+const getBuyerFollowedBrandStoreWishlistData = catchAsync(async (req, res) => {
+
+    const { user } = req as AuthRequest;
+
+    const result = await BuyerServices.getBuyersStoreBrandWishlistdataService(user);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Retrieved buyer followed retailer, brands, wishlist data.",
+        data: result,
+    });
+});
+
 const BuyerController = { 
     setBuyerNotificationAlertsController,
     addSelectedShoeSizeController,
     addBrandsOfInterestController,
     getBuyersInterestsDataController,
-    updateBuyerProfileController
-};
+    updateBuyerProfileController,
+
+    getNearbyProductsForBuyerController,
+    getBuyerFollowedBrandsProductsController,
+    getBuyerFollowedRetailersProductsController,
+    getBuyerFollowedBrandStoreWishlistData
+}
 
 
 export default BuyerController;

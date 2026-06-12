@@ -14,11 +14,15 @@ RetailerRouter.get(
     RetailerController.filterNearbyRetailersController
 );
 
+//buyer map page
+
 RetailerRouter.get(
     "/get-nearby-retailer-map",
     validateRequest(RetailerValidations.validateLatLongTofilterNearbyRetailers),
     RetailerController.getAllNearbyRetailerForMap
 );
+
+//retailer inventory
 
 RetailerRouter.get(
     "/get-retailer-inventory",
@@ -26,8 +30,10 @@ RetailerRouter.get(
     RetailerController.getRetailerInventoryController
 );
 
+//retailer order
+
 RetailerRouter.get(
-    "/get-retailer-orders",
+    "/get-retailer-order",
     authorizeUser,
     RetailerController.getRetailerAllOrdersController
 );

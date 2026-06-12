@@ -6,6 +6,8 @@ import RetailerRouter from "../module/Retailer/Retailer.routes";
 import EngagementRouter from "../module/Engagement/Engagement.routes";
 import ResellerRouter from "../module/Reseller/Reseller.routes";
 import ProductRouter from "../module/Product/Product.routes";
+import CartRouter from "../module/Cart/Cart.routes";
+import OrderRouter from "../module/Order/Order.routes";
 
 
 const allRouter = Router();
@@ -39,6 +41,14 @@ const moduleRoutes = [
     {
         path: '/product',
         router: ProductRouter,
+    },
+    {
+        path: '/cart',
+        router: CartRouter,
+    },
+    {
+        path: '/order',
+        router: OrderRouter,
     },
   
 ];

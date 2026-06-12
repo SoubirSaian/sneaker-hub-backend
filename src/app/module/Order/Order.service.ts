@@ -301,8 +301,79 @@ const getBuyerAllOrder = async (userDetails: IJwtPayload, query: Record<string,u
 }
 
 
+//retailer
+
+//home page
+
+const getRetailerHomePageOrderStatDataService = async (userDetails: IJwtPayload) => {
+
+    const allOrder = await OrderModel.countDocuments({
+        orderStatus: {
+            $in: [
+
+            ENUM_ORDER_STATUS.ACCEPTED,
+            // ENUM_ORDER_STATUS.,
+            // ENUM_ORDER_STATUS.ACCEPTED,
+            ] 
+        }
+    });
+
+    const readyOrder = await OrderModel.countDocuments({
+        orderStatus: {
+            $in: [
+
+            ENUM_ORDER_STATUS.COMPLETED,
+            // ENUM_ORDER_STATUS.,
+            // ENUM_ORDER_STATUS.ACCEPTED,
+            ] 
+        }
+    });
+
+    let revenue ;
+
+    let runningLowPairCount
+
+    return {
+        allOrder,
+        readyOrder,
+        revenue,
+        runningLowPairCount
+    }
+
+}
+
+//order page
+
+const retailerChangeOrderStatusService = async (userDetails: IJwtPayload, query: Record<string, unknown>) => {
+    const {profileId} = userDetails;
+
+    const {orderId,orderStatus} = query;
+
+    const order = await OrderItemModel.findByIdAndUpdate(
+        orderId,
+        {
+            orderStatus: orderStatus
+        }
+    );
+}
+
+const getOrderDetailsById = async (orderId: string) => {
+    // const {profileId} = userDetails;
+
+    const order = await OrderItemModel.findById(orderId).lean();
+
+    if(!order){
+        throw new ApiError(404,"Failed to get order details.");
+    }
+
+    return order;
+}
+
+
 const OrderServices = { 
     placeNewOrderService,
+    getRetailerHomePageOrderStatDataService,
+    getOrderDetailsById,
  };
 
 export default OrderServices;

@@ -81,8 +81,25 @@ const getMyListedPairs = async (userDetails: IJwtPayload,query: Record<string,un
 
     const pairs = await PairsModel.find(filter).lean();
 
-    return pairs;
+    return {
+        pairs,
+        pairCount: pairs.length
+    };
 }
+
+const getSinglePairDetails = async (pairId: string) => {
+
+    const pair = await PairsModel.findById(pairId).lean();
+
+    if(pair){
+        throw new ApiError(404,"Pair detail not found.");
+    }
+
+    return pair;
+    
+}
+
+
 
 //retailer makes request for a pair to the reseller
 const makeRequestForPairService = async (userDetails: IJwtPayload, payload: any) => {
@@ -149,8 +166,20 @@ const getAllPairRequestsForReseller = async (userDetails: IJwtPayload, query: Re
     }
 
     const pairRequests = await PairRequestModel.find(filter).lean();
+    
 
     return pairRequests;
+}
+
+const getSInglePairRequestService = async (pairRequestId: string) => {
+
+    const pairRequest = await PairRequestModel.findById(pairRequestId).lean();
+
+    if(!pairRequest){
+        throw new ApiError(404,"Pair request not found.");
+    }
+
+    return pairRequest;
 }
 
 const acceptPairRequest = async (userDetails: IJwtPayload, pairRequestId: string) => {
@@ -225,8 +254,10 @@ const PairsServices = {
     addNewPairsToReseller,
     editPairsDetails,
     getMyListedPairs,
+    getSinglePairDetails,
     // makeRequestForPairService,
     getAllPairRequestsForReseller,
+    getSInglePairRequestService,
     acceptPairRequest,
     rejectPairRequest,
     proposeCounterOfferToPairRequest

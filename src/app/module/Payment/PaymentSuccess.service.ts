@@ -3,7 +3,7 @@
 import mongoose from "mongoose";
 import { OrderItemModel, OrderModel } from "../Order/Order.model";
 import { PaymentModel } from "./Payment.model";
-import ProductModel from "../Product/Product.model";
+import {ProductModel} from "../Product/Product.model";
 import CartModel from "../Cart/Cart.model";
 
 

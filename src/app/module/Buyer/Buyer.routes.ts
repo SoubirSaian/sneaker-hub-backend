@@ -38,4 +38,36 @@ BuyerRouter.patch(
 );
 
 
+//buyer home page
+
+BuyerRouter.get(
+    "/buyer-nearby-product",
+    authorizeUser,
+    validateRequest(BuyerValidations.getBuyerNearbyProductValidation),
+    BuyerController.getBuyersInterestsDataController
+);
+
+BuyerRouter.get(
+    "/buyer-followed-brand-product",
+    authorizeUser,
+    // validateRequest(BuyerValidations.getBuyerNearbyProductValidation),
+    BuyerController.getBuyerFollowedBrandsProductsController
+);
+
+BuyerRouter.get(
+    "/buyer-followed-retailer-product",
+    authorizeUser,
+    // validateRequest(BuyerValidations.getBuyerNearbyProductValidation),
+    BuyerController.getBuyerFollowedRetailersProductsController
+);
+
+BuyerRouter.get(
+    "/buyer-brand-retailer-wishlist",
+    authorizeUser,
+    // validateRequest(BuyerValidations.getBuyerNearbyProductValidation),
+    BuyerController.getBuyerFollowedBrandStoreWishlistData
+);
+
+
+
 export default BuyerRouter;

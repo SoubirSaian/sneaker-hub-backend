@@ -7,6 +7,7 @@ import { FollowModel, WishListModel } from "../Engagement/Engagement.model";
 import RetailerModel from "../Retailer/Retailer.model";
 import { IBuyer, IBuyerNotification } from "./Buyer.interface";
 import BuyerModel from "./Buyer.model";
+import { ProductModel } from "../Product/Product.model";
 
 const setBuyerNotificationAlerts = async (userDetails: IJwtPayload, payload: IBuyerNotification) => {
 
@@ -122,6 +123,8 @@ const updateBuyerProfileService = async (
     return updatedProfile;
 };
 
+
+
 //buer home page api
 
 const getNearbyProductsForBuyer = async (userDetails: IJwtPayload, query: Record<string,unknown>) => {
@@ -196,12 +199,61 @@ const getNearbyProductsForBuyer = async (userDetails: IJwtPayload, query: Record
 
         {
             $sort: {
-                distance: 1,
+                createdAt: - 1,
             },
         },
         {
-            $limit: 5
+            $limit: 10
         }
+    ]);
+
+    const trendingProduct = await ProductModel.find({}).sort({totalSearchCount: -1}).lean();
+
+    const mostWishlistedProducts = await WishListModel.aggregate([
+        {
+            $match: {
+                isWanted: false,
+            },
+        },
+
+        {
+            $group: {
+            _id: "$productId",
+            wishlistCount: {
+                $sum: 1,
+            },
+            },
+        },
+
+        {
+            $sort: {
+            wishlistCount: -1,
+            },
+        },
+
+        {
+            $lookup: {
+            from: "products",
+            localField: "_id",
+            foreignField: "_id",
+            as: "product",
+            },
+        },
+
+        {
+            $unwind: "$product",
+        },
+
+        {
+            $project: {
+            _id: "$product._id",
+            name: "$product.name",
+            brand: "$product.brand",
+            price: "$product.price",
+            images: "$product.images",
+            wishlistCount: 1,
+            },
+        },
     ]);
 
 
@@ -232,12 +284,94 @@ const getBuyersStoreBrandWishlistdataService = async (userDetails: IJwtPayload) 
     };
 }
 
+const getBuyerFollowedBrandsProducts = async (userDetails: IJwtPayload) => {
+    const { profileId } = userDetails;
+
+    // const profileObjectId = new mongoose.Types.ObjectId(profileId);
+
+    const buyer:any = await BuyerModel.findById(profileId).select("brands").lean();
+
+    const products = await ProductModel.find({
+        brand: {
+            $in: buyer?.brands,
+        },
+        })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .lean();
+
+    // const [brands, stores, wishlist] = await Promise.all([
+    //     BuyerModel.findById(profileId).select("brands").lean(),
+
+    //     FollowModel.find({ buyerId: profileId }).populate("retailerId", "name").lean(),
+
+    //     WishListModel.find({ buyerId: profileId }).populate("productId", "name").lean()
+    // ]);
+
+    return {
+        followedBrandProduct: products,
+        // brands: brands || [],
+        // stores: stores || [],
+        // wishlist: wishlist || []
+    };
+
+    
+}
+
+const getBuyerFollowedRetailersProducts = async (userDetails: IJwtPayload) => {
+    const { profileId } = userDetails;
+
+    // const profileObjectId = new mongoose.Types.ObjectId(profileId);
+
+    const followedRetailers = await FollowModel.find({
+            buyerId: profileId,
+        })
+        .select("retailerId")
+        .lean();
+
+    const retailerIds = followedRetailers.map(
+        (item) => item.retailerId
+        );
+
+    const products = await ProductModel.find({
+        retailerId: {
+            $in: retailerIds,
+        },
+        availability: ENUM_PRODUCT_AVAILABILITY.ACTIVE,
+        })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .lean();
+
+    // const [brands, stores, wishlist] = await Promise.all([
+    //     BuyerModel.findById(profileId).select("brands").lean(),
+
+    //     FollowModel.find({ buyerId: profileId }).populate("retailerId", "name").lean(),
+
+    //     WishListModel.find({ buyerId: profileId }).populate("productId", "name").lean()
+    // ]);
+
+    return {
+        followedRetailerProduct: products,
+        // brands: brands || [],
+        // stores: stores || [],
+        // wishlist: wishlist || []
+    };
+
+    
+}
+
 const BuyerServices = { 
     setBuyerNotificationAlerts,
     addSelectedShoeSize,
     addBrandsOfInterest,
     getBuyersInterestsData,
-    updateBuyerProfileService
+    updateBuyerProfileService,
+
+    getNearbyProductsForBuyer,
+    getBuyersStoreBrandWishlistdataService,
+    getBuyerFollowedBrandsProducts,
+    getBuyerFollowedRetailersProducts
 };
 
 export default BuyerServices;

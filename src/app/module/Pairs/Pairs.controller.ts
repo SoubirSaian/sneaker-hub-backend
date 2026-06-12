@@ -45,6 +45,20 @@ const getAllListedPairsController = catchAsync(async (req, res) => {
     });
 });
 
+const getSinglePairDetailsController = catchAsync(async (req, res) => {
+
+    // const { user } = req as AuthRequest;
+
+    const result = await PairsServices.getSinglePairDetails(req.params.id);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Retrieved pair details.",
+        data: result,
+    });
+});
+
 // const makeRequestForPairController = catchAsync(async (req, res) => {
 
 //     const { user } = req as AuthRequest;
@@ -69,6 +83,20 @@ const getAllpairRequestController = catchAsync(async (req, res) => {
         statusCode: 200,
         success: true,
         message: "Pair requests retrieved successfully.",
+        data: result,
+    });
+});
+
+const getSinglePairRequestDetails = catchAsync(async (req, res) => {
+
+    // const { user } = req as AuthRequest;
+
+    const result = await PairsServices.getSInglePairRequestService(req.params.id);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Retrieved a pair requests details.",
         data: result,
     });
 });
@@ -119,8 +147,11 @@ const PairsController = {
     addNewPairsController,
     editPairsController,
     getAllListedPairsController,
+    getSinglePairDetailsController,
+
     // makeRequestForPairController,
     getAllpairRequestController,
+    getSinglePairRequestDetails,
     acceptPairRequestController,
     rejectPairRequestController,
     proposeCounterOfferToPairRequestController
