@@ -81,6 +81,10 @@ const makeRequestForPairService = async (userDetails: IJwtPayload, payload: any)
 
 };
 
+const updateResellerProfile = async (userDetails: IJwtPayload, payload: Partial<IReseller>) => {
+
+}
+
 //dashboard
 
 const getAllResellerService = async (query: Record<string,unknown>) => {

@@ -8,16 +8,75 @@ export interface IProduct {
     price: number;
     images: string[];
     brand: string;
-    color: string;
-    styleCode: string;
-    variant: {
-        size: string,
-        stock: number
-    }[];
+    // color?: string;
+    styleCode?: string;
+    // variant?: {
+    //     size: string,
+    //     stock: number
+    // }[];
+    sneakerAttributes?: {};
+    tshirtAttributes?: {};
     availability: string;
     totalSearchCount: number;
     createdAt: Date;
 }
+
+export interface IProductVariant {
+    retailerId: Types.ObjectId;
+    productId: Types.ObjectId;
+    size: string;
+    color: string;
+    sku: string;
+    price: number;
+    stock: number;
+    reservedStock: number;
+    isActive: boolean;
+    createdAt: Date;
+}
+
+export type TProductType = "SNEAKER" | "TSHIRT";
+
+export type TGender = "MEN" | "WOMEN" | "UNISEX" | "KIDS";
+
+export type TSneakerAttributes = {
+  modelName: string;
+  releaseYear?: number;
+  colorway?: string;
+  condition?: "NEW" | "USED" | "DEADSTOCK";
+  upperMaterial?: string;
+  soleMaterial?: string;
+  closureType?: string;
+};
+
+export type TTshirtAttributes = {
+  fit?: "REGULAR" | "SLIM" | "OVERSIZED" | "RELAXED";
+  fabric?: string;
+  neckType?: "CREW_NECK" | "V_NECK" | "POLO" | "ROUND_NECK";
+  sleeveType?: "SHORT_SLEEVE" | "LONG_SLEEVE" | "SLEEVELESS";
+  gsm?: number;
+};
+
+export type TProductVariantPayload = {
+  size: string;
+  color: string;
+  sku: string;
+  price: number;
+  stock: number;
+};
+
+export type TAddProductPayload = {
+  retailerId: string;
+  productType: TProductType;
+  name: string;
+  brand: string;
+  description: string;
+  images: string[];
+  basePrice: number;
+  gender: TGender;
+  sneakerAttributes?: TSneakerAttributes;
+  tshirtAttributes?: TTshirtAttributes;
+  variants: TProductVariantPayload[];
+};
 
 export interface IRecentSearch extends Document {
   buyerId: string;

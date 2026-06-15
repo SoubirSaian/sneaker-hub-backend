@@ -11,7 +11,7 @@ const ProductRouter = express.Router();
 ProductRouter.post(
     "/add-new-product",
     authorizeUser,
-    // validateRequest(ProductValidations.addProductZodSchema),
+    validateRequest(ProductValidations.addNewProductValidation),
     ProductController.addProductController
 );
 

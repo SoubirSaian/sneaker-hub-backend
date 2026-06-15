@@ -7,6 +7,13 @@ export const ENUM_USER_Type = {
    
 }
 
+export const ENUM_AUTH_PROVIDER_TYPE = {
+    EMAIL: "Email",
+    GOOGLE: "Google",
+    APPLE: "Apple",
+   
+}
+
 export const ENUM_ORDER_TYPE = {
     BUY_NOW: "Buy Now",
     HOLD: "Hold",
@@ -138,6 +145,25 @@ export const ENUM_PAIR_REQUEST_STATUS = {
     DECLINE: "Decline",
     COMPLETED: "Completed",
     DELIVEREd: "Delivered",
+}
+
+export const ENUM_OLD_PAIR_CONTITION = {
+    DEADSTOCK : "Deadstock",
+    NEAR_DEADSTOCK : "Near Deadstock",
+    VERY_GOOD : "Very Good",
+    GOOD: "Good",
+    
+}
+
+export const ENUM_OLD_PAIR_STATUS = {
+    ACCEPTED : "Accepted",
+    REJECTED : "Rejected",
+    PENDING : "Pending",
+    COUNTER: "Counter",
+    DECLINE: "Decline",
+    COMPLETED: "Completed",
+    DELIVEREd: "Delivered",
+    
 }
 
 

@@ -13,10 +13,18 @@ import { multerS3Storage } from "../../helper/multerS3";
      fileSize: 5 * 1024 * 1024, // 5MB . less than 5mb file allowed
     //  fieldSize: 3 * 1024 *1024
    },
+
+  
  
    fileFilter: (req, file, cb) => {
+
+      const allowedMimeTypes = [
+        "image/png",
+        "image/jpg",
+        "image/jpeg",
+      ];
     
-       if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg" ) {
+       if ( allowedMimeTypes.includes(file.mimetype) ) {
  
          cb(null, true);
  

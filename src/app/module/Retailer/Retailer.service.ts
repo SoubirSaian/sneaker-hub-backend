@@ -352,8 +352,48 @@ const toggleOperationHour = async (userDetails: IJwtPayload, query: Record<strin
     return null;
 };
 
+const updateRetailerProfile = async (userDetails: IJwtPayload, payload: Partial<IRetailer>) => {
+
+}
+
 //retailer home page
 
+
+//retailer beanch
+const addNewBranch = async (
+    userDetails: IJwtPayload,
+    profileImage: Express.Multer.File,
+    coverImage: Express.Multer.File,
+     payload: Partial<IRetailer>
+) => {
+
+    const {authId,profileId} = userDetails;
+
+    const parentStore:any = await RetailerModel.findById(profileId).select("email").lean();
+
+    const branch = await RetailerModel.create({
+       parentStore: profileId,
+        authId,
+        email: parentStore?.email,
+       ...payload 
+    });
+
+    if(!branch){
+        throw new ApiError(500,"Failed to create new branch store.");
+    }
+
+    return null;
+}
+
+const getAllBranch = async (userDetails: IJwtPayload) => {
+
+    const {profileId} = userDetails;
+
+    const branches = await RetailerModel.find({parentStore: profileId}).lean();
+
+    return branches;
+
+}
 
 
 //dashboard
@@ -443,7 +483,10 @@ const RetailerServices = {
     getAllNearbyRetailersForMap,
     getRetailerInventory,
     getAllOrdersOfRetailer,
-    toggleOperationHour
+    toggleOperationHour,
+
+    addNewBranch,
+    getAllBranch,
 };
 
 

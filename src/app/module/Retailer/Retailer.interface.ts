@@ -11,6 +11,7 @@ export interface IOperationHour {
 export interface IRetailer {
   id: Types.ObjectId;
   auth: Types.ObjectId;
+  parentStore?: Types.ObjectId;
   badge: string;
   name: string;
   email: string;
@@ -27,6 +28,12 @@ export interface IRetailer {
   phone: string;
   website: string;
   operationHour: IOperationHour[];
+  settings?: {
+    isAcceptInAppOrder: boolean;
+    isAcceptInHoldWithDeposit: boolean;
+    isInStorePickupAvailable: boolean;
+    customPickupRule: string;
+  };
   socialLink: {};
   subscription: Types.ObjectId;
   subscriptionStartDate: Date;

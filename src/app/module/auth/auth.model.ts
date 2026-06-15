@@ -2,7 +2,7 @@ import { model, models, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import config from "../../../config";
 import { IAuth } from "./auth.interface";
-import { ENUM_USER_Type } from "../../../utilities/enum";
+import { ENUM_AUTH_PROVIDER_TYPE, ENUM_USER_Type } from "../../../utilities/enum";
 
 
 const AuthSchema = new Schema<IAuth>({
@@ -12,6 +12,18 @@ const AuthSchema = new Schema<IAuth>({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     phone: { type: String, default: "" },
+    authProviders: [{
+        provider: {
+            type: String,
+            enum: Object.values(ENUM_AUTH_PROVIDER_TYPE),
+            required: true
+        },
+
+        providerId: {
+            type: String,
+            required: true
+        }
+    }],
     role: { type: String, required: true , enum: Object.values(ENUM_USER_Type)},
     verificationCode: { type: String, default: "" },
     isEmailVerified: { type: Boolean, default: false },

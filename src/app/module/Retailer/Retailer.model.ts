@@ -14,6 +14,7 @@ const defaultOperationHours = () => [
 
 const RetailerSchema = new Schema<IRetailer>({
     auth: { type: Schema.Types.ObjectId, required: true, ref: "Auth" },
+    parentStore: { type: Schema.Types.ObjectId, ref: "Retailer", default: null },
     badge: { type: String, default: "" },
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },

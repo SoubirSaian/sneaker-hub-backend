@@ -7,6 +7,10 @@ export interface IAuth {
     name?: string;
     phone?: string;
     password: string;
+    authProviders: {
+        provider: string,
+        providerId: string
+    }[];
     role: string
     verificationCode: string;
     isEmailVerified: boolean;

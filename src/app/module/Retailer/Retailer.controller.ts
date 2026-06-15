@@ -68,12 +68,51 @@ const toggleRetailerOperationHourController = catchAsync(async (req, res) => {
     });
 });
 
+//branch
+
+const addNewBranchController = catchAsync(async (req, res) => {
+
+    const { user } = req as AuthRequest;
+
+    const files = req.files as {
+        [fieldname: string]: Express.Multer.File[];
+    };
+
+    const profileImage = files?.["profile-image"]?.[0];
+    const coverImage = files?.["cover-image"]?.[0];
+
+    const result = await RetailerServices.addNewBranch(user,profileImage,coverImage, req.query);
+
+    sendResponse(res, {
+        statusCode: 201,
+        success: true,
+        message: "New branch created successfully.",
+        data: result,
+    });
+});
+
+const getAllBranchController = catchAsync(async (req, res) => {
+
+    const { user } = req as AuthRequest;
+
+    const result = await RetailerServices.getAllBranch(user);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Retrieved all branch.",
+        data: result,
+    });
+});
+
 const RetailerController = { 
     filterNearbyRetailersController,
     getAllNearbyRetailerForMap,
     getRetailerInventoryController,
     getRetailerAllOrdersController,
-    toggleRetailerOperationHourController
+    toggleRetailerOperationHourController,
+    addNewBranchController,
+    getAllBranchController,
 };
 
 export default RetailerController;

@@ -3,6 +3,7 @@ import {auth, authorizeUser} from "../../middlewares/auth";
 import validateRequest from "../../middlewares/validateRequest";
 import RetailerValidations from "./Retailer.validation";
 import RetailerController from "./Retailer.controller";
+import { uploadProfile } from "../../middlewares/multerMiddleware";
 
 
 const RetailerRouter = express.Router();
@@ -43,6 +44,36 @@ RetailerRouter.post(
     authorizeUser,
     RetailerController.toggleRetailerOperationHourController
 );
+
+
+//branch
+
+
+RetailerRouter.post(
+    "/add-new-branch",
+
+    authorizeUser,
+
+    uploadProfile.fields([
+        {
+            name: "profile-image",
+            maxCount: 1,
+        },
+        {
+            name: "cover-image",
+            maxCount: 1,
+        },
+    ]),
+
+    RetailerController.addNewBranchController
+),
+
+RetailerRouter.get(
+    "/get-all-branch",
+    authorizeUser,
+    RetailerController.getAllBranchController
+);
+
 
 
 

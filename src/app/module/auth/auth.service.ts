@@ -11,7 +11,7 @@ import { JwtPayload, Secret,SignOptions } from "jsonwebtoken";
 import { IAuth, IResetPassword, TLoginUser, TRegisterUser } from "./auth.interface";
 import { IJwtPayload } from "../../../interface/jwt.interface";
 import AuthModel from "./auth.model";
-import { ENUM_USER_Type } from "../../../utilities/enum";
+import { ENUM_AUTH_PROVIDER_TYPE, ENUM_USER_Type } from "../../../utilities/enum";
 import ResellerModel from "../Reseller/Reseller.model";
 import RetailerModel from "../Retailer/Retailer.model";
 import BuyerModel from "../Buyer/Buyer.model";
@@ -61,6 +61,10 @@ const registerUserService = async (payload: TRegisterUser) => {
             email: email.toLowerCase(),
             password,
             role: userType,
+            authProviders:[{
+                provider: ENUM_AUTH_PROVIDER_TYPE.EMAIL,
+                providerId: email.toLowerCase()
+            }] ,
             verificationCode: code,
         };
         // console.log("User data payload prepared:", userDataPayload);

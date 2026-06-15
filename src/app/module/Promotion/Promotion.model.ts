@@ -30,7 +30,19 @@ const PromotionSchema = new Schema<IPromotion>({
         default: "draft"
     },
 
-    scheduledAt: Date,
+    scheduledAt: {
+        type: Date,
+        default: null
+    },
+    duration: {
+        type: Number,
+        required: true,
+        default: 1 // day count
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    }
 }, { timestamps: true });
 
 const PromotionModel = models.Promotion || model<IPromotion>("Promotion", PromotionSchema);
