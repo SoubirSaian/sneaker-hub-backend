@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+
 const SneakerAttributesSchema = z.object({
 //   modelName: z.string().min(1),
 //   releaseYear: z.number().int().positive(),
@@ -67,6 +68,7 @@ export const addNewProductValidation = z
       });
     }
   });
+
 
 const ProductValidations = { 
     addNewProductValidation

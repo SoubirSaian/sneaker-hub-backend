@@ -36,7 +36,6 @@ import config from "../config";
 
 
 
-
 export const multerS3Storage = multerS3({
     s3,
     bucket: config.aws.bucket_name!,

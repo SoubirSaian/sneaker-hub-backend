@@ -352,6 +352,7 @@ const toggleOperationHour = async (userDetails: IJwtPayload, query: Record<strin
     return null;
 };
 
+
 const updateRetailerProfile = async (userDetails: IJwtPayload, payload: Partial<IRetailer>) => {
 
 }
@@ -394,6 +395,9 @@ const getAllBranch = async (userDetails: IJwtPayload) => {
     return branches;
 
 }
+
+//retailer home page
+
 
 
 //dashboard
