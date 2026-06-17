@@ -12,6 +12,7 @@ const defaultOperationHours = () => [
     { day: "Saturday", openTime: "9:00 AM", closeTime: "10:00 PM", isOpen: true },
 ];
 
+
 const RetailerSchema = new Schema<IRetailer>({
     auth: { type: Schema.Types.ObjectId, required: true, ref: "Auth" },
     parentStore: { type: Schema.Types.ObjectId, ref: "Retailer", default: null },

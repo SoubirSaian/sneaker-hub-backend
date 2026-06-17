@@ -21,24 +21,25 @@ const TshirtAttributesSchema = z.object({
 
 const ProductVariantSchema = z.object({
   size: z.string().min(1),
-  color: z.string().min(1),
+  color: z.string().min(1).optional(),
   sku: z.string().min(1).optional(),
-  price: z.number().positive(),
-  stock: z.number().int().min(0),
+  price: z.number().positive().optional(),
+  stock: z.number().int().min(1),
 });
 
-export const addNewProductValidation = z
-  .object({
+export const addNewProductValidation = z.object({
+  body: z.object({
+
     productType: z.string().min(1),
     name: z.string().min(1),
     brand: z.string().min(1),
     description: z.string().min(1),
 
-    images: z.array(z.string()).min(1),
+    // images: z.array(z.string()).min(1),
 
     basePrice: z.number().positive(),
 
-    gender: z.string().min(1),
+    gender: z.string().min(1).optional(),
 
     sneakerAttributes: SneakerAttributesSchema.optional(),
 
@@ -46,6 +47,7 @@ export const addNewProductValidation = z
 
     variants: z.array(ProductVariantSchema).min(1),
   })
+  
   .superRefine((data, ctx) => {
     const hasSneaker = !!data.sneakerAttributes;
     const hasTshirt = !!data.tshirtAttributes;
@@ -67,7 +69,8 @@ export const addNewProductValidation = z
         path: ["sneakerAttributes"],
       });
     }
-  });
+  })
+});
 
 
 const ProductValidations = { 

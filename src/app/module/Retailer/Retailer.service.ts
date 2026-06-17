@@ -7,6 +7,7 @@ import { ProductModel } from "../Product/Product.model";
 import { IOperationHour, IRetailer } from "./Retailer.interface";
 import RetailerModel from "./Retailer.model";
 import { ReviewModel } from "../Engagement/Engagement.model";
+import deleteOldFile from "../../../utilities/deleteFile";
 
 //get all nearby retailer for buyer 
 const filterNearbyRetailers = async (query: Record<string, unknown>) => {
@@ -29,7 +30,7 @@ const filterNearbyRetailers = async (query: Record<string, unknown>) => {
                 $maxDistance: maxDistance,
             },
         },
-    }).select("name");
+    }).select("name").lean();
 
     return nearbyRetailers;
 };
@@ -313,37 +314,26 @@ const getAllOrdersOfRetailer = async (userDetails: IJwtPayload, query: Record<st
 }
 
 
+//retailer profile
 
 //update retailer operation hours
+
 const toggleOperationHour = async (userDetails: IJwtPayload, query: Record<string, unknown>) => {
     const {profileId} = userDetails;
 
     const { day } = query;
 
 
-    // const retailer = await RetailerModel.findById(profileId);
-
-    // if (!retailer) {
-    //     throw new ApiError(404, "Retailer not found to toggle operation hour.");
-    // }
-
-    // const operationDay = retailer.operationHour.find( item => item?.day === day);
-
-    // if (!operationDay) {
-    //     throw new ApiError(404, "Day not found.");
-    // }
-
-    // // TOGGLE
-    // operationDay.isOpen = !operationDay.isOpen;
-
-    // await retailer.save();
-
-    const retailer = await RetailerModel.findOne({
+    const retailer:any = await RetailerModel.findOne({
         _id: profileId,
-        "operationHour.day": day
+        // "operationHour.day": day
     });
 
-    const operationHour = retailer.operationHour.find( (item:IOperationHour) => item?.day === day);
+    // console.log("retailer:", retailer);
+
+    const operationHour = retailer?.operationHour.find( (item:IOperationHour) => item?.day === day);
+
+    // console.log("operation hour:", operationHour);
 
     operationHour.isOpen = !operationHour.isOpen;
 
@@ -352,15 +342,73 @@ const toggleOperationHour = async (userDetails: IJwtPayload, query: Record<strin
     return null;
 };
 
+//retailer profile
+const updateRetailerProfileService = async (
+    userDetails: IJwtPayload,
+    profileImage: Express.Multer.File | undefined,
+    coverImage: Express.Multer.File | undefined,
+    payload: any
+    ) => {
 
-const updateRetailerProfile = async (userDetails: IJwtPayload, payload: Partial<IRetailer>) => {
+    const { profileId } = userDetails;
+    
+    let {name,details,phone,website,address,latitude,longitude} = payload;
 
-}
+    console.log("profileImage, coverImage", profileImage, coverImage);
+    
+    const profile:any = await RetailerModel.findById(profileId).lean();
+    if (!profile) {
+        throw new ApiError(404, "Buyer not found to update.");
+    }
+
+    
+    const updateData: any = {
+        name,
+        details,
+        phone,
+        website,
+        address,
+    };
+    
+    if(profileImage){
+        updateData.image = `uploads/profile-image/${profileImage?.filename}`;
+
+        deleteOldFile(profile?.image);
+    }
+
+    if(coverImage){
+        updateData.coverImage = `uploads/cover-image/${coverImage?.filename}`;
+
+        deleteOldFile(profile?.coverImage);
+    }
+
+    if (latitude != null && longitude != null) {
+        updateData["location.coordinates"] = [
+            Number(longitude),
+            Number(latitude),
+        ];
+    }
+
+    const updatedProfile = await RetailerModel.findByIdAndUpdate(
+        profileId,
+        {
+            $set: updateData,
+        },
+        {
+            new: true,
+        }
+    );
+
+    
+
+    return updatedProfile;
+};
+
 
 //retailer home page
 
 
-//retailer beanch
+//retailer branch
 const addNewBranch = async (
     userDetails: IJwtPayload,
     profileImage: Express.Multer.File,
@@ -370,14 +418,31 @@ const addNewBranch = async (
 
     const {authId,profileId} = userDetails;
 
+    // console.log("Retailer branch cover and profile image:",profileImage,coverImage);
+
     const parentStore:any = await RetailerModel.findById(profileId).select("email").lean();
 
-    const branch = await RetailerModel.create({
-       parentStore: profileId,
+    const branchPayload: any = {
+        parentStore: profileId,
         authId,
         email: parentStore?.email,
        ...payload 
-    });
+    }
+
+    if(profileImage){
+        branchPayload.image = `uploads/profile-image/${profileImage?.filename}`;
+
+        // deleteOldFile(profile?.image);
+    }
+
+    if(coverImage){
+        branchPayload.coverImage = `uploads/cover-image/${coverImage?.filename}`;
+
+        // deleteOldFile(profile?.coverImage);
+    }
+
+
+    const branch = await RetailerModel.create(branchPayload);
 
     if(!branch){
         throw new ApiError(500,"Failed to create new branch store.");
@@ -396,7 +461,7 @@ const getAllBranch = async (userDetails: IJwtPayload) => {
 
 }
 
-//retailer home page
+
 
 
 
@@ -491,6 +556,8 @@ const RetailerServices = {
 
     addNewBranch,
     getAllBranch,
+
+    updateRetailerProfileService,
 };
 
 

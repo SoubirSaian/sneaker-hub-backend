@@ -31,9 +31,24 @@ const proposeAnOfferToResellerForPairRequestController = catchAsync(async (req, 
     });
 });
 
+const updateResellerProfile = catchAsync(async (req, res) => {
+
+    const { user } = req as AuthRequest;
+
+    const result = await ResellerServices.updateResellerProfileService(user,req.file, req.body);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Updated reseller profile successfully.",
+        data: result,
+    });
+});
+
 const ResellerController = { 
     resellerHomePageStatDataController,
-    proposeAnOfferToResellerForPairRequestController
+    proposeAnOfferToResellerForPairRequestController,
+    updateResellerProfile,
  };
 
 export default ResellerController;

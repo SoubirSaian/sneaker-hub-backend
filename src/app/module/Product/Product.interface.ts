@@ -70,9 +70,10 @@ export type TAddProductPayload = {
   name: string;
   brand: string;
   description: string;
-  images: string[];
+  // images: string[];
   basePrice: number;
-  gender: TGender;
+  availability: string;
+  styleCode: string;
   sneakerAttributes?: TSneakerAttributes;
   tshirtAttributes?: TTshirtAttributes;
   variants: TProductVariantPayload[];

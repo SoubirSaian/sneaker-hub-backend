@@ -195,6 +195,7 @@ const sendNowPromotion = async ( payload: IPromotion ) => {
   return promotion;
 };
 
+//create promotion
 const createNewPromotionService = async (userDetails: IJwtPayload, payload: Partial<IPromotion>) => {
 
     const { profileId } = userDetails;
@@ -227,8 +228,29 @@ const createNewPromotionService = async (userDetails: IJwtPayload, payload: Part
     // return newPromotion;
 };
 
+//get promotion
+const getAllPromotion = async (userDetails: IJwtPayload, query: Record<string,unknown>) => {
+
+  const {profileId} = userDetails;
+  const {isActive} = query;
+
+  let filter : any = {
+    retailerId: profileId,
+  }
+
+  if(isActive || !isActive){
+    filter.isActive = isActive
+  }
+
+  const allPromotion = await PromotionModel.find(filter).lean();
+
+  return allPromotion;
+
+}
+
 const PromotionServices = { 
-    createNewPromotionService
+    createNewPromotionService,
+    getAllPromotion,
  };
 
 export default PromotionServices;

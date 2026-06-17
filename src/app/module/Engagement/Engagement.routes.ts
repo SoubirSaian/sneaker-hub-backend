@@ -7,6 +7,8 @@ import EngagementController from "./Engagement.controller";
 
 const EngagementRouter = express.Router();
 
+//follow retailer
+
 EngagementRouter.post(
     "/follow-retailer/:id",
     authorizeUser,
@@ -20,6 +22,45 @@ EngagementRouter.post(
     // validateRequest(EngagementValidations.followRetailerZodSchema),
     EngagementController.unfollowRetailerController   
 );
+
+//follow user
+
+EngagementRouter.post(
+    "/follow-user/:id",
+    authorizeUser,
+    // validateRequest(EngagementValidations.addToWishListValidation),
+    EngagementController.followUser   
+);
+
+EngagementRouter.get(
+    "/get-nearby-user",
+    // authorizeUser,
+    validateRequest(EngagementValidations.validateLatLongTofilterNearbyUsers),
+    EngagementController.getNearbyUser   
+);
+
+EngagementRouter.get(
+    "/get-all-follower",
+    authorizeUser,
+    // validateRequest(EngagementValidations.addToWishListValidation),
+    EngagementController.getAllFollower   
+);
+
+EngagementRouter.get(
+    "/get-all-following",
+    authorizeUser,
+    // validateRequest(EngagementValidations.addToWishListValidation),
+    EngagementController.getAllFollowing   
+);
+
+EngagementRouter.post(
+    "/get-follow-user-details/:id",
+    // authorizeUser,
+    // validateRequest(EngagementValidations.addToWishListValidation),
+    EngagementController.getFollowUserDetailsController   
+);
+
+//wishlist
 
 EngagementRouter.post(
     "/add-to-wishlist",

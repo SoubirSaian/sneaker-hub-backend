@@ -45,6 +45,27 @@ RetailerRouter.post(
     RetailerController.toggleRetailerOperationHourController
 );
 
+RetailerRouter.patch(
+    "/update-retailer-profile",
+
+    authorizeUser,
+
+    uploadProfile.fields([
+        {
+            name: "profile-image",
+            maxCount: 1,
+        },
+        {
+            name: "cover-image",
+            maxCount: 1,
+        },
+    ]),
+
+    // validateRequest(RetailerValidations.addNewBranchValidationSchema),
+
+    RetailerController.updateRetailerProfile
+),
+
 
 //branch
 
@@ -64,6 +85,8 @@ RetailerRouter.post(
             maxCount: 1,
         },
     ]),
+
+    validateRequest(RetailerValidations.addNewBranchValidationSchema),
 
     RetailerController.addNewBranchController
 ),

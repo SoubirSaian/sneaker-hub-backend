@@ -21,7 +21,7 @@ export const ENUM_ORDER_TYPE = {
 }
 
 export const ENUM_PRODUCT_TYPE = {
-  SNEAKERS: "Sneakers",
+  SNEAKERS: "Sneaker",
   CLOTHING: "Clothing",  
 }
 

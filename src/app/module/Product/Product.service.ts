@@ -4,6 +4,7 @@ import { IJwtPayload } from "../../../interface/jwt.interface";
 import deleteOldFile from "../../../utilities/deleteFile";
 import { IProduct, TAddProductPayload } from "./Product.interface";
 import {ProductModel, ProductVariantModel, RecentSearchModel} from "./Product.model";
+import { ENUM_PRODUCT_TYPE } from "../../../utilities/enum";
 
 
 
@@ -24,86 +25,25 @@ const addProductService = async (
     description,
     // images,
     basePrice,
-    gender,
+    styleCode,
+    availability,
     sneakerAttributes,
     tshirtAttributes,
     variants,
   } = payload;
 
-  if (!files || files.length === 0) {
-        throw new ApiError(400, "At least one product image is required.");
-    }
-
-    const imageUrls = files.map(file => {
-        // Assuming you have a function to upload the file and get its URL
-        return `uploads/product-image/${file.filename}`; // Replace with actual URL generation logic
-    });
-
-  // if (!Types.ObjectId.isValid(retailerId)) {
-  //   throw new Error("Invalid retailer id");
-  // }
-
-  // if (!["SNEAKER", "TSHIRT"].includes(productType)) {
-  //   throw new Error("Invalid product type");
-  // }
-
-  // if (!name?.trim()) {
-  //   throw new Error("Product name is required");
-  // }
-
-  // if (!brand?.trim()) {
-  //   throw new Error("Brand is required");
-  // }
-
-  // if (!description?.trim()) {
-  //   throw new Error("Description is required");
-  // }
-
-  // if (!images || !Array.isArray(images) || images.length === 0) {
-  //   throw new Error("At least one product image is required");
-  // }
-
-  // if (!basePrice || basePrice <= 0) {
-  //   throw new Error("Base price must be greater than 0");
-  // }
-
-  // if (!["MEN", "WOMEN", "UNISEX", "KIDS"].includes(gender)) {
-  //   throw new Error("Invalid gender");
-  // }
-
-  // if (productType === "SNEAKER" && !sneakerAttributes) {
-  //   throw new Error("Sneaker attributes are required");
-  // }
-
-  // if (productType === "TSHIRT" && !tshirtAttributes) {
-  //   throw new Error("T-shirt attributes are required");
-  // }
-
-  // if (!variants || !Array.isArray(variants) || variants.length === 0) {
-  //   throw new Error("At least one product variant is required");
-  // }
-
-  // for (const variant of variants) {
-  //   if (!variant.size?.trim()) {
-  //     throw new Error("Variant size is required");
+  // if (!files || files.length === 0) {
+  //       throw new ApiError(400, "At least one product image is required.");
   //   }
 
-  //   if (!variant.color?.trim()) {
-  //     throw new Error("Variant color is required");
-  //   }
+    // const imageUrls = files.map(file => {
+    //     // Assuming you have a function to upload the file and get its URL
+    //     return `uploads/product-image/${file.filename}`; // Replace with actual URL generation logic
+    // });
 
-  //   if (!variant.sku?.trim()) {
-  //     throw new Error("Variant SKU is required");
-  //   }
+    // console.log("product images:",imageUrls);
 
-  //   if (!variant.price || variant.price <= 0) {
-  //     throw new Error("Variant price must be greater than 0");
-  //   }
-
-  //   if (variant.stock < 0) {
-  //     throw new Error("Variant stock cannot be negative");
-  //   }
-  // }
+  
 
   const duplicateSkuCheck = new Set();
 
@@ -152,22 +92,23 @@ const addProductService = async (
 
     const productPayload: Record<string, unknown> = {
       retailerId: profileId,
-      productType,
+      type: productType,
       name: name.trim(),
       brand: brand.trim(),
       description: description.trim(),
-      images: imageUrls,
-      basePrice,
-      gender,
-      status: "ACTIVE",
+      styleCode,
+      // images: imageUrls || [],
+      price: basePrice,
+      // gender,
+      availability,
     };
 
-    if (productType === "SNEAKER") {
+    if (productType === ENUM_PRODUCT_TYPE.SNEAKERS) {
       productPayload.sneakerAttributes = sneakerAttributes;
       productPayload.tshirtAttributes = null;
     }
 
-    if (productType === "TSHIRT") {
+    if (productType === ENUM_PRODUCT_TYPE.CLOTHING) {
       productPayload.tshirtAttributes = tshirtAttributes;
       productPayload.sneakerAttributes = null;
     }
@@ -181,11 +122,11 @@ const addProductService = async (
     const variantPayload = variants.map((variant) => ({
       productId: product._id,
       retailerId:profileId,
-      size: variant.size.trim(),
-      color: variant.color.trim(),
-      sku: variant.sku.trim().toUpperCase(),
-      price: variant.price,
-      stock: variant.stock,
+      size: variant?.size.trim(),
+      color: variant?.color || "",
+      sku: variant?.sku || "",
+      price: variant?.price || 0,
+      stock: variant?.stock,
       reservedStock: 0,
       isActive: true,
     }));

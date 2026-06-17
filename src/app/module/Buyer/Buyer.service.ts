@@ -32,12 +32,17 @@ const addSelectedShoeSize = async (userDetails: IJwtPayload, payload: { label: s
 
     const { profileId } = userDetails;
 
+    if (!payload.length) {
+        throw new ApiError(400, "At least one shoe size is required.");
+    }
+
     const buyer:any = await BuyerModel.findById(profileId);
 
     if (!buyer) {
         throw new ApiError(404, "Buyer not found");
     }
 
+    buyer.shoeSize = payload[0]?.size;
     buyer.selectedShoeSize.push(...payload);
 
     await buyer.save();
@@ -87,16 +92,23 @@ const getBuyersInterestsData = async (userDetails: IJwtPayload) => {
 const updateBuyerProfileService = async (
     userDetails: IJwtPayload,
     file: Express.Multer.File | undefined,
-    payload: Partial<IBuyer>
+    payload: any
     ) => {
 
     const { profileId } = userDetails;
     
-    const {name,bio,selectedShoeSize,brands,privacy} = payload;
+    let {name,bio,shoeSize,selectedShoeSize,brands,privacy,address,latitude,longitude} = payload;
+
+    // let lat,long;
+
+    // if(latitude && longitude){
+    //     lat = Number(latitude);
+    //     long = Number(longitude);
+    // }
     
     const profile:any = await BuyerModel.findById(profileId).lean();
     if (!profile) {
-        throw new ApiError(404, "Buyer not found");
+        throw new ApiError(404, "Buyer not found to update.");
     }
 
     let buyerProfileImage = "";
@@ -107,16 +119,36 @@ const updateBuyerProfileService = async (
         deleteOldFile(profile?.image);
     }
 
-    const updatedProfile = await BuyerModel.findByIdAndUpdate(profileId, {
-        $set: {
-            name:name,
-            bio:bio,
-            image: buyerProfileImage,
-            selectedShoeSize: selectedShoeSize,
-            brands: brands,
-            privacy: privacy,
+    const updateData: any = {
+        name,
+        bio,
+        shoeSize,
+        selectedShoeSize,
+        brands,
+        address,
+        privacy,
+    };
+
+    if (buyerProfileImage) {
+        updateData.image = buyerProfileImage;
+    }
+
+    if (latitude != null && longitude != null) {
+        updateData["location.coordinates"] = [
+            Number(longitude),
+            Number(latitude),
+        ];
+    }
+
+    const updatedProfile = await BuyerModel.findByIdAndUpdate(
+        profileId,
+        {
+            $set: updateData,
+        },
+        {
+            new: true,
         }
-    }, { new: true });
+    );
 
     
 

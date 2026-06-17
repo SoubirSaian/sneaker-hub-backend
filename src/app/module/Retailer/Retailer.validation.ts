@@ -34,6 +34,7 @@ const addNewBranchValidationSchema = z.object({
         }),
         address: z.string().min(1,"Formal address is required."),
         phone: z.string().min(1,"Phone number is required."),
+        name: z.string().min(1,"Branch name is required."),
     
         
     }),

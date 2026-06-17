@@ -3,6 +3,7 @@ import { IProduct, IProductVariant, IRecentSearch } from "./Product.interface";
 import { ENUM_PRODUCT_AVAILABILITY, ENUM_PRODUCT_TYPE } from "../../../utilities/enum";
 import { getAvailability } from "../../middlewares/mongooseMiddleware";
 
+
 //Product schema
 const ProductSchema = new Schema<IProduct>({
     retailerId: { type: Schema.Types.ObjectId, required: true, ref: "Retailer" },
@@ -18,10 +19,10 @@ const ProductSchema = new Schema<IProduct>({
     sneakerAttributes: {
       // modelName: String,
       // releaseYear: Number,
-      colorway: String,
+      colorway: {type: String, default: ""},
       condition: {
         type: String,
-        enum: ["NEW", "USED", "DEADSTOCK",],
+        enum: ["New", "Used", "Deadstock",],
       },
       // upperMaterial: String,
       // soleMaterial: String,
@@ -31,15 +32,17 @@ const ProductSchema = new Schema<IProduct>({
     tshirtAttributes: {
       fit: {
         type: String,
-        enum: ["REGULAR", "SLIM", "OVERSIZED", "RELAXED"],
+        enum: ["Regular", "Slim", "Oversized", "Relaxed"],
       },
-      material: String,
+      material: {type: String, default: ""},
       care: {
         type: String,
+        default: ""
         // enum: ["CREW_NECK", "V_NECK", "POLO", "ROUND_NECK"],
       },
       season: {
         type: String,
+        default: ""
         // enum: ["SHORT_SLEEVE", "LONG_SLEEVE", "SLEEVELESS"],
       },
       // gsm: Number,
@@ -88,7 +91,7 @@ const ProductVariantSchema = new Schema<IProductVariant>(
 
     price: {
       type: Number,
-      required: true,
+      default: 0,
     },
 
     stock: {

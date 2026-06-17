@@ -6,6 +6,12 @@ export interface IFollow {
   createdAt: Date;
 }
 
+export interface IUserFollow {
+  senderId: Types.ObjectId;      // ref Buyer.id
+  receiverId: Types.ObjectId;   // ref Retailer.id
+  createdAt: Date;
+}
+
 export interface IwishList {
   buyerId: Types.ObjectId;      // ref Buyer.id
   retailerId: Types.ObjectId;   // ref Retailer.id

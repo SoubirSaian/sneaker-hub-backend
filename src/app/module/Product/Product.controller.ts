@@ -4,10 +4,11 @@ import sendResponse from "../../../utilities/sendResponse";
 import ProductServices from "./Product.service";
 
 const addProductController = catchAsync(async (req, res) => {
+
     const { user } = req as AuthRequest;
 
     const files = req.files as Express.Multer.File[];
-
+    // console.log(req.body);
     const result = await ProductServices.addProductService(user,files,req.body);
 
     sendResponse(res, {

@@ -10,7 +10,7 @@ export interface IPromotion {
     sendMethod: string;
     status: string;
     scheduledAt?: Date;
-    duration: number;
+    duration: number; //hours
     isActive: boolean;
     createdAt: Date;
 }

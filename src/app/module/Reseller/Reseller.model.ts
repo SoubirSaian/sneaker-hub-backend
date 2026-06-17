@@ -8,7 +8,7 @@ const ResellerSchema = new Schema<IReseller>({
     email: { type: String, required: true, unique: true },
     image: { type: String, default: "" },
     bio: { type: String, default: "" },
-    shoeSize: { type: Number, default: 0 },
+    // shoeSize: { type: Number, default: 0 },
     type: { type: String, default: "" },
     location: {
         type: {

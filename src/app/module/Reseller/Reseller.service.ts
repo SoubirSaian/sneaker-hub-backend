@@ -1,6 +1,7 @@
 import ApiError from "../../../error/ApiError";
 import notification from "../../../helper/notification";
 import { IJwtPayload } from "../../../interface/jwt.interface";
+import deleteOldFile from "../../../utilities/deleteFile";
 import { ENUM_NOTIFICATION_TYPE, ENUM_PAIR_REQUEST_STATUS, ENUM_USER_Type } from "../../../utilities/enum";
 import { IPairRequest } from "../Pairs/Pairs.interface";
 import { PairRequestModel, PairsModel } from "../Pairs/Pairs.model";
@@ -81,9 +82,66 @@ const makeRequestForPairService = async (userDetails: IJwtPayload, payload: any)
 
 };
 
-const updateResellerProfile = async (userDetails: IJwtPayload, payload: Partial<IReseller>) => {
+//retailer profile
+const updateResellerProfileService = async (
+    userDetails: IJwtPayload,
+    file: Express.Multer.File | undefined,
+    payload: any
+    ) => {
 
-}
+    const { profileId } = userDetails;
+    
+    let {name,bio,phone,website,address,latitude,longitude} = payload;
+
+    // console.log("profileImage, coverImage", profileImage, coverImage);
+    
+    const profile:any = await ResellerModel.findById(profileId).lean();
+    if (!profile) {
+        throw new ApiError(404, "Buyer not found to update.");
+    }
+
+    
+    const updateData: any = {
+        name,
+        bio,
+        phone,
+        website,
+        address,
+    };
+    
+    if(file){
+        updateData.image = `uploads/profile-image/${file.filename}`;
+
+        deleteOldFile(profile?.image);
+    }
+
+    // if(coverImage){
+    //     updateData.coverImage = `uploads/cover-image/${profileImage}`;
+
+    //     deleteOldFile(profile?.coverImage);
+    // }
+
+    if (latitude != null && longitude != null) {
+        updateData["location.coordinates"] = [
+            Number(longitude),
+            Number(latitude),
+        ];
+    }
+
+    const updatedProfile = await ResellerModel.findByIdAndUpdate(
+        profileId,
+        {
+            $set: updateData,
+        },
+        {
+            new: true,
+        }
+    );
+
+    
+
+    return updatedProfile;
+};
 
 //dashboard
 
@@ -159,7 +217,8 @@ const approveResellerService = async (id: string) => {
 
 const ResellerServices = { 
     resellerHomePageStatDataService,
-    makeRequestForPairService
+    makeRequestForPairService,
+    updateResellerProfileService,
 };
 
 

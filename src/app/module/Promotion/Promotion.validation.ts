@@ -10,6 +10,7 @@ const createNewPromotionValidation = z.object({
         type: z.nativeEnum(ENUM_PROMOTION_TYPE),
         recepient: z.nativeEnum(ENUM_PROMOTION_RECEIVER_TYPE),
         sendMethod: z.nativeEnum(ENUM_PROMOTION_SEND_METHOD),
+        duration: z.number().min(1,"Minimum 1 hour required.")
         // type: z.enum(Object.values(ENUM_PROMOTION_TYPE) as [string, ...string[]]),
         // recepient: z.enum(Object.values(ENUM_PROMOTION_RECEIVER_TYPE) as [string, ...string[]]),
         // sendMethod: z.enum(Object.values(ENUM_PROMOTION_SEND_METHOD) as [string, ...string[]]),

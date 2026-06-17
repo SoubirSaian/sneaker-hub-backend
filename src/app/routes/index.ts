@@ -8,6 +8,7 @@ import ResellerRouter from "../module/Reseller/Reseller.routes";
 import ProductRouter from "../module/Product/Product.routes";
 import CartRouter from "../module/Cart/Cart.routes";
 import OrderRouter from "../module/Order/Order.routes";
+import ReportRouter from "../module/Report/Report.routes";
 
 
 const allRouter = Router();
@@ -49,6 +50,10 @@ const moduleRoutes = [
     {
         path: '/order',
         router: OrderRouter,
+    },
+    {
+        path: '/report',
+        router: ReportRouter,
     },
   
 ];

@@ -3,6 +3,7 @@ import {auth, authorizeUser} from "../../middlewares/auth";
 import validateRequest from "../../middlewares/validateRequest";
 import BuyerValidations from "./Buyer.validation";
 import BuyerController from "./Buyer.controller";
+import { uploadProfile } from "../../middlewares/multerMiddleware";
 
 
 const BuyerRouter = express.Router();
@@ -34,6 +35,7 @@ BuyerRouter.get(
 BuyerRouter.patch(
     "/update-buyer-profile",
     authorizeUser,
+    uploadProfile.single("profile-image"),
     BuyerController.updateBuyerProfileController
 );
 

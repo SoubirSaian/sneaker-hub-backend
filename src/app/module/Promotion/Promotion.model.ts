@@ -37,7 +37,7 @@ const PromotionSchema = new Schema<IPromotion>({
     duration: {
         type: Number,
         required: true,
-        default: 1 // day count
+        default: 1 // hours count
     },
     isActive: {
         type: Boolean,

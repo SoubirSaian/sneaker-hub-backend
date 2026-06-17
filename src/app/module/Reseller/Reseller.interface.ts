@@ -7,7 +7,7 @@ export interface IReseller {
   name: string;
   email: string;
   image: string;
-  shoeSize: number;
+  // shoeSize: number;
   bio: string;
   type: string;
   location: {

@@ -68,6 +68,31 @@ const toggleRetailerOperationHourController = catchAsync(async (req, res) => {
     });
 });
 
+const updateRetailerProfile = catchAsync(async (req, res) => {
+
+    const { user } = req as AuthRequest;
+
+    console.log("req.files:",req.files);
+
+    const files = req.files as {
+        [fieldname: string]: Express.Multer.File[];
+    };
+
+    console.log("files:",files)
+
+    const profileImage = files?.["profile-image"]?.[0];
+    const coverImage = files?.["cover-image"]?.[0];
+
+    const result = await RetailerServices.updateRetailerProfileService(user,profileImage,coverImage, req.body);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Retailer profile updated.",
+        data: result,
+    });
+});
+
 //branch
 
 const addNewBranchController = catchAsync(async (req, res) => {
@@ -111,6 +136,8 @@ const RetailerController = {
     getRetailerInventoryController,
     getRetailerAllOrdersController,
     toggleRetailerOperationHourController,
+    updateRetailerProfile,
+    
     addNewBranchController,
     getAllBranchController,
 };

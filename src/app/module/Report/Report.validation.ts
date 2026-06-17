@@ -1,7 +1,8 @@
 import { z } from "zod";
 
-        
-const u = z.object({
+   
+
+const addReportValidationSchema = z.object({
     body: z.object({
         retailerId: z.string().min(24,"Buyer id is required."),
         orderId: z.string().min(24,"Buyer id is required.").optional(),
@@ -14,6 +15,8 @@ const u = z.object({
     }),
 });
 
-const ReportValidations = { u };
+const ReportValidations = { 
+    addReportValidationSchema
+ };
 
 export default ReportValidations;
