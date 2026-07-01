@@ -6,6 +6,7 @@ import UserModel from "../User/User.model";
 // import notification from "../../../helper/sendNotification";
 import { ENUM_NOTIFICATION_TYPE } from "../../../utilities/enum";
 import { emitResult } from "../../../socket/emitResult";
+import notification from "../../../helper/notification";
 
 //send request
 export const sendConversationRequest = async (
@@ -42,14 +43,15 @@ export const sendConversationRequest = async (
       }));
 
   //send a notification
-  // await notification.createNotification({
-  //     toId: receiverId as string,
-  //     toModel: "User",
-  //     title: `An user sent you a conversation request.`,
-  //     type: ENUM_NOTIFICATION_TYPE.SENT_WAVE,
-  //     referenceId: conversation?._id,
-  //     referenceModel: "Conversation"
-  // });
+  await notification.createNotification({
+      toId: receiverId as string,
+      toModel: "Buyer",
+      title: `A reseller started a new conversation.`,
+      type: ENUM_NOTIFICATION_TYPE.STARTED_CONVERSATION,
+      referenceId: conversation?._id,
+      referenceModel: "Conversation",
+      metadata: {}
+  });
 
   return conversation;
 };
@@ -185,7 +187,7 @@ export const getChatList = async (userId: string) => {
         
     } catch (error) {
         console.log(error);
-        throw new ApiError(500,"Error in get chat lis.");
+        throw new ApiError(500,"Error in get chat list.");
     }
 
 };

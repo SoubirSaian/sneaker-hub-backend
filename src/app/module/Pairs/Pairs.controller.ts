@@ -7,7 +7,9 @@ const addNewPairsController = catchAsync(async (req, res) => {
 
     const { user } = req as AuthRequest;
 
-    const result = await PairsServices.addNewPairsToReseller(user, req.body);
+    const files = req.files as Express.Multer.File[];
+
+    const result = await PairsServices.addNewPairsToReseller(user,files, req.body);
 
     sendResponse(res, {
         statusCode: 201,
@@ -21,7 +23,9 @@ const editPairsController = catchAsync(async (req, res) => {
 
     const { user } = req as AuthRequest;
 
-    const result = await PairsServices.editPairsDetails(user, req.params.id, req.body);
+    const files = req.files as Express.Multer.File[];
+
+    const result = await PairsServices.editPairsDetails(user, req.params.id, files, req.body);
 
     sendResponse(res, {
         statusCode: 200,
@@ -59,19 +63,34 @@ const getSinglePairDetailsController = catchAsync(async (req, res) => {
     });
 });
 
-// const makeRequestForPairController = catchAsync(async (req, res) => {
+const makeRequestForPairController = catchAsync(async (req, res) => {
 
-//     const { user } = req as AuthRequest;
+    const { user } = req as AuthRequest;
 
-//     const result = await PairsServices.makeRequestForPairService(user, req.body);
+    const result = await PairsServices.makeRequestForPairService(user, req.body);
 
-//     sendResponse(res, {
-//         statusCode: 201,
-//         success: true,
-//         message: "Pair request submitted successfully.",
-//         data: result,
-//     });
-// });
+    sendResponse(res, {
+        statusCode: 201,
+        success: true,
+        message: "Pair request submitted successfully.",
+        data: result,
+    });
+});
+
+const getAllRetailerPairRequestController = catchAsync(async (req, res) => {
+
+    const { user } = req as AuthRequest;
+
+    const result = await PairsServices.getAllPairRequestsForRetailer(user, req.query);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Pair requests retrieved successfully.",
+        data: result,
+    });
+});
+
 
 const getAllpairRequestController = catchAsync(async (req, res) => {
 
@@ -149,7 +168,9 @@ const PairsController = {
     getAllListedPairsController,
     getSinglePairDetailsController,
 
-    // makeRequestForPairController,
+    makeRequestForPairController,
+    getAllRetailerPairRequestController,
+
     getAllpairRequestController,
     getSinglePairRequestDetails,
     acceptPairRequestController,

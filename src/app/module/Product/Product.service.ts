@@ -406,6 +406,8 @@ const deleteRecentSearchService = async (userDetails: IJwtPayload, recentSearchI
 
 const ProductServices = { 
     addProductService,
+    editProductService,
+    deleteProductService,
     searchProductsService,
     getTrendingNowAndRecentSearchesSevice,
     getProductDetailsByIdService,

@@ -3,6 +3,7 @@ import {auth, authorizeUser} from "../../middlewares/auth";
 import validateRequest from "../../middlewares/validateRequest";
 import PairsValidations from "./Pairs.validation";
 import PairsController from "./Pairs.controller";
+import { uploadProfile } from "../../middlewares/multerMiddleware";
 
 
 const PairsRouter = express.Router();
@@ -10,6 +11,7 @@ const PairsRouter = express.Router();
 PairsRouter.post(
     "/add-new-pairs",
     authorizeUser,
+    uploadProfile.array("pair-image",8),
     validateRequest(PairsValidations.addnewPairValidationSchema),
     PairsController.addNewPairsController
 );
@@ -17,16 +19,20 @@ PairsRouter.post(
 PairsRouter.patch(
     "/edit-pairs/:id",
     authorizeUser,
+     uploadProfile.array("pair-image",8),
     // validateRequest(PairsValidations.addnewPairValidationSchema),
     PairsController.editPairsController
 );
 
+
+//get my listed pair
 PairsRouter.get(
     "/get-listed-pairs",
     authorizeUser,
     // validateRequest(PairsValidations.addNewPairsZodSchema),
     PairsController.getAllListedPairsController
 );
+
 
 PairsRouter.get(
     "/get-single-pair/:id",
@@ -35,21 +41,34 @@ PairsRouter.get(
     PairsController.getSinglePairDetailsController
 );
 
-// PairsRouter.post(
-//     "/make-pair-request",
-//     authorizeUser,
-//     // validateRequest(PairsValidations.addNewPairsZodSchema),
-//     PairsController.makeRequestForPairController
-// );
+//retailer
 
 PairsRouter.post(
+    "/request-new-pair",
+    authorizeUser,
+    validateRequest(PairsValidations.makeRequestForPairValidationSchema),
+    PairsController.makeRequestForPairController
+);
+
+PairsRouter.post(
+    "/get-retailer-pair-request",
+    authorizeUser,
+    // validateRequest(PairsValidations.makeRequestForPairValidationSchema),
+    PairsController.getAllRetailerPairRequestController
+);
+
+
+//reseller
+//get all pair request
+
+PairsRouter.get(
     "/get-pair-requests",
     authorizeUser,
     // validateRequest(PairsValidations.addNewPairsZodSchema),
     PairsController.getAllpairRequestController
 );
 
-PairsRouter.post(
+PairsRouter.get(
     "/get-single-pair-request/:id",
     // authorizeUser,
     // validateRequest(PairsValidations.addNewPairsZodSchema),

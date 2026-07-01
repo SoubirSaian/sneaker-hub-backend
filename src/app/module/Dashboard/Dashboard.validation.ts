@@ -2,9 +2,9 @@ import {z} from "zod";
 
 export const createAdminvalidation = z.object({
   body: z.object({
-    name: z.string().min(1, "Profile id is required"),
+    name: z.string().min(1, "Admin name is required"),
     email: z.string().email("Valid email required"),
-    phone: z.string().min(5, "Phone Number is required"),
+    role: z.string().min(5, "Admin role is required"),
     password: z.string().min(5, "Password is required"),
   })
 });

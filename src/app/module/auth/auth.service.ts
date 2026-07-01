@@ -53,6 +53,8 @@ const registerUserService = async (payload: TRegisterUser) => {
             throw new ApiError(400, "This email already exists. Please Login.");
         }
 
+        console.log("user exist", emailExist);
+
         // Generate verification code
         const { code, expiredAt } = generateVerifyCode(10);
 
@@ -101,8 +103,8 @@ const registerUserService = async (payload: TRegisterUser) => {
         await createdUser.save({ session });
 
         // // Commit transaction
-        // await session.commitTransaction();
-        // session.endSession();
+        await session.commitTransaction();
+        session.endSession();
 
         // Send email AFTER commit
         await sendVerificationEmail(email, {
@@ -123,11 +125,12 @@ const registerUserService = async (payload: TRegisterUser) => {
         session.endSession();
 
         throw error;
-    } finally {
-        // Commit transaction
-        await session.commitTransaction();
-        session.endSession();
-    }
+    } 
+    // finally {
+    //     // Commit transaction
+    //     await session.commitTransaction();
+    //     session.endSession();
+    // }
 
 }
 
@@ -145,12 +148,18 @@ const loginUserService = async (payload: TLoginUser) => {
     if (user.isBlocked) {
         throw new ApiError(403, 'This user is blocked');
     }
-    // if (!user.isVerified) {
-    //     throw new ApiError(
-    //         403,
-    //         'You are not verified user . Please verify your email'
-    //     );
-    // }
+
+    //check whether user email is verified or not
+    if(!user.isEmailVerified){
+        
+        return { 
+            // expert: emailExist,
+            statusCode: 403 ,
+            isEmailVerified: false,
+            msg: "Your email is not verified yet. Please verify your email.",
+        }
+            
+    }
 
     // checking if the password is correct ----
     // if (user.password && !(await UserModel.isPaswordMatched(password, user.password))) {

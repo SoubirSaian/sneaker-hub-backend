@@ -10,19 +10,19 @@ import generateVerifyCode from "../../../utilities/codeGenerator";
 import { sendVerificationEmail } from "../../../helper/emailHelper";
 import deleteOldFile from "../../../utilities/deleteFile";
 import UserModel from "../User/User.model";
-import PostModel from "../Post/Post.model";
-import { ENUM_POST_STATUS } from "../../../utilities/enum";
+// import PostModel from "../Post/Post.model";
+// import { ENUM_POST_STATUS } from "../../../utilities/enum";
 
 
 
 const registerAdminService = async (payload: IAdmin) => {
-    const {name, email,password,phone} = payload;
+    const {name, email,password,role} = payload;
 
     const admin = await AdminModel.create({
         name: name,
         email: email.toLowerCase(),
         password: password,
-        phone: phone
+        role: role
     });
 
     if(!admin){
@@ -32,7 +32,7 @@ const registerAdminService = async (payload: IAdmin) => {
     return {
         name: admin.name,
         email: admin.email,
-        phone: admin.phone,
+        // phone: admin.phone,
         role: admin.role
     }
 }
@@ -255,7 +255,7 @@ const editProfileService = async (userDetails: JwtPayload,file: Express.Multer.F
 const changeAdminPasswordService = async (userDetails: JwtPayload, payload: IChangePassword) => {
     // Service logic goes here
     const { userId } = userDetails;
-    const { oldPassword, newPassword } = payload;
+    const { currentPassword, newPassword } = payload;
 
     const admin =  await AdminModel.findById(userId).select('+password');
     if(!admin){
@@ -267,7 +267,7 @@ const changeAdminPasswordService = async (userDetails: JwtPayload, payload: ICha
     //     throw new ApiError(400,'Old password is incorrect');
     // }
 
-    if(admin.password !== oldPassword){
+    if(admin.password !== currentPassword){
         throw new ApiError(400,'Old password is incorrect');
     }
 
@@ -317,17 +317,17 @@ const blockAdminService = async (userId: string) => {
 
 const dashboardStatService = async () => {
 
-    const [totalUsers,totalPosts,activePost] = await Promise.all([
-        UserModel.countDocuments(),
-        PostModel.countDocuments(),
-        PostModel.countDocuments({status: { $ne: ENUM_POST_STATUS.DELIVERED}})
-    ]);
+    // const [totalUsers,totalPosts,activePost] = await Promise.all([
+    //     UserModel.countDocuments(),
+    //     PostModel.countDocuments(),
+    //     PostModel.countDocuments({status: { $ne: ENUM_POST_STATUS.DELIVERED}})
+    // ]);
 
-    return {
-        totalUsers,
-        totalPosts,
-        activePost
-    }
+    // return {
+    //     totalUsers,
+    //     totalPosts,
+    //     activePost
+    // }
     
 };
 

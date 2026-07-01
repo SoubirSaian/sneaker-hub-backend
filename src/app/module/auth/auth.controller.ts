@@ -16,12 +16,12 @@ const registerUser = catchAsync(async (req, res) => {
 
 const loginUser = catchAsync(async (req, res) => {
     
-    const result = await authServices.loginUserService(req.body);
+    const result:any = await authServices.loginUserService(req.body);
 
     sendResponse(res, {
-        statusCode: 200,
+        statusCode: result?.statusCode ? result?.statusCode : 200,
         success: true,
-        message: "user logged In successfully.",
+        message: result?.msg ? result?.msg : "user logged In successfully.",
         data: result,
     });
 });

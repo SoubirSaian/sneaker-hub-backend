@@ -32,6 +32,11 @@ const NotificationSchema = new Schema<INotification>({
     referenceModel: {
         type: String
     },
+
+    metaData: {
+        type: Object,
+        default: {}
+    },
     
     isSeen: { type: Boolean, default: false },
 }, { timestamps: true });

@@ -122,10 +122,7 @@ const updateResellerProfileService = async (
     // }
 
     if (latitude != null && longitude != null) {
-        updateData["location.coordinates"] = [
-            Number(longitude),
-            Number(latitude),
-        ];
+        updateData["location.coordinates"] = [Number(longitude),Number(latitude)];
     }
 
     const updatedProfile = await ResellerModel.findByIdAndUpdate(
